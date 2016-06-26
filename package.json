@@ -4,6 +4,11 @@
   "private": true,
   "main": "server.js",
   "dependencies": {
-    "mongoose": "^4.5.1"
+    "express": "^4.14.0",
+    "mongoose": "^4.5.1",
+    "body-parser": "^1.15.2",
+    "morgan": "^1.7.0",
+    "jsonwebtoken": "^7.0.1",
+    "bcrypt-nodejs": "^0.0.3"
   }
 }
