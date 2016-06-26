@@ -13,7 +13,7 @@ var router = express.Router();
 router.use('/users', auth.validateToken);
 
 // routes
-router.route('/users').get(function(req, res) {
+router.get('/users', auth.validateAdminLevel(1), function(req, res) {
   // get all users
   User.find(function(err, users) {
     if (err) {
@@ -39,7 +39,7 @@ router.route('/users').post(function(req, res) {
   });
 });
 
-router.route('/users/:id').put(function(req, res) {
+router.route('/users/:id').put(auth.validateAdminLevel(1), function(req, res) {
   // get user
   User.findOne({ _id: req.params.id }, function(err, user) {
     if (err) {
@@ -62,7 +62,7 @@ router.route('/users/:id').put(function(req, res) {
   });
 });
 
-router.route('/users/:id').get(function(req, res) {
+router.route('/users/:id').get(auth.validateAdminLevel(1), function(req, res) {
   User.findOne({ _id: req.params.id }, function(err, user) {
     if (err) {
       return res.send(err);
@@ -72,7 +72,7 @@ router.route('/users/:id').get(function(req, res) {
   });
 });
 
-router.route('/users/:id').delete(function(req, res) {
+router.route('/users/:id').delete(auth.validateAdminLevel(1), function(req, res) {
   User.remove({ _id: req.params.id }, function(err) {
     if (err) {
       return res.send(err);
@@ -98,10 +98,17 @@ router.route('/authenticate').post(function(req, res) {
       return res.status(401).send({ success: false, message: 'Invalid credentials' });
     }
 
-    // create authentication token
-    var token = jwt.sign(user, config.secret, {});
+    // validate password
+    user.verifyPassword(req.body.password, function(err, isMatch) {
+      if (err || !isMatch) {
+        return res.status(401).send({ success: false, message: 'Invalid credentials' });
+      }
 
-    return res.send({ success: true, message: 'Authenticated', token: token});
+      // create authentication token
+      var token = jwt.sign(user, config.secret, {});
+
+      return res.send({ success: true, message: 'Authenticated', token: token});
+    });
   });
 });
 

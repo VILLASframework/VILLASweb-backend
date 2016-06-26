@@ -29,13 +29,3 @@ app.use('/api/v1', users);
 app.listen(config.port, function() {
   console.log('Express server listening on port ' + config.port);
 });
-
-var newUser = User({ username: 'admin', password: 'test' });
-newUser.save(function(err) {
-  if (err) {
-    console.log(err);
-    return;
-  }
-
-  console.log('Created default admin user from config file');
-});
