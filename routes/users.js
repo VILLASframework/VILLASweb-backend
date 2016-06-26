@@ -13,7 +13,7 @@ var router = express.Router();
 router.use('/users', auth.validateToken);
 
 // routes
-router.get('/users', auth.validateAdminLevel(1), function(req, res) {
+router.route('/users').get(auth.validateAdminLevel(1), function(req, res) {
   // get all users
   User.find(function(err, users) {
     if (err) {
@@ -27,8 +27,6 @@ router.get('/users', auth.validateAdminLevel(1), function(req, res) {
 router.route('/users').post(function(req, res) {
   // create new user
   var user = new User(req.body);
-
-  console.log(req.body);
 
   user.save(function(err) {
     if (err) {

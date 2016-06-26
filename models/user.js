@@ -8,7 +8,8 @@ var Schema = mongoose.Schema;
 var userSchema = new Schema({
   username: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  adminLevel: { type: Number, default: 0 }
+  adminLevel: { type: Number, default: 0 },
+  projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }]
 });
 
 userSchema.methods.verifyPassword = function(password, callback) {

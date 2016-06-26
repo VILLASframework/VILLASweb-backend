@@ -8,6 +8,7 @@ var morgan = require('morgan');
 var config = require('./config');
 
 var users = require('./routes/users');
+var projects = require('./routes/projects');
 
 var User = require('./models/user');
 
@@ -24,8 +25,33 @@ mongoose.connect(config.databaseURL + config.databaseName);
 
 // register routes
 app.use('/api/v1', users);
+app.use('/api/v1', projects);
 
 // start the app
 app.listen(config.port, function() {
   console.log('Express server listening on port ' + config.port);
 });
+
+// add admin account
+if (config.admin) {
+  // check if admin account exists
+  User.findOne({ username: config.admin.username }, function(err, user) {
+    if (err) {
+      console.log(err);
+      return;
+    }
+
+    if (!user) {
+      // create new admin user
+      var newUser = User({ username: config.admin.username, password: config.admin.password, adminLevel: 1});
+      newUser.save(function(err) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+
+        console.log('Created default admin user from config file');
+      });
+    }
+  });
+}
