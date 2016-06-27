@@ -3,6 +3,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
+var cors = require('cors');
 
 // local include
 var config = require('./config');
@@ -19,6 +20,7 @@ var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
+app.use(cors());
 
 // connect to database
 mongoose.connect(config.databaseURL + config.databaseName);

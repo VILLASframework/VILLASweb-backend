@@ -33,37 +33,34 @@ router.get('/projects', function(req, res) {
       return res.send(err);
     }
 
-    res.json(projects);
+    res.json({ projects: projects });
   });
 });
 
 router.route('/projects').post(function(req, res) {
   // create new project
-  var project = new Project(req.body);
+  var project = new Project(req.body.project);
 
   project.save(function(err) {
     if (err) {
       return res.send(err);
     }
 
-    res.send({ success: true, message: 'Project added' });
+    //res.send({ success: true, message: 'Project added', project: project });
+    res.send({ project: project });
   });
 });
 
-router.route('/projects/:id').put(function(req, res) {
+router.route('/projects/:id').patch(function(req, res) {
   // get project
   Project.findOne({ _id: req.params.id }, function(err, project) {
     if (err) {
       return res.send(err);
     }
 
-    if (!authorizeUser(req, project)) {
-      return res.send({ success: false, message: 'User not authorized' });
-    }
-
     // update all properties
-    for (property in req.body) {
-      project[property] = req.body[property];
+    for (property in req.body.project) {
+      project[property] = req.body.project[property];
     }
 
     // save the changes
@@ -72,7 +69,7 @@ router.route('/projects/:id').put(function(req, res) {
         return res.send(err);
       }
 
-      res.send({ success: true, message: 'Project updated' });
+      res.send({ project: project });
     });
   });
 });
@@ -83,11 +80,7 @@ router.route('/projects/:id').get(function(req, res) {
       return res.send(err);
     }
 
-    if (!authorizeUser(req, project)) {
-      return res.send({ success: false, message: 'User not authorized' });
-    }
-
-    res.send(project);
+    res.send({ project: project });
   });
 });
 
@@ -95,10 +88,6 @@ router.route('/projects/:id').delete(function(req, res) {
   Project.findOne({ _id: req.params.id }, function(err, project) {
     if (err) {
       return res.send(err);
-    }
-
-    if (!authorizeUser(req, project)) {
-      return res.send({ success: false, message: 'User not authorized' });
     }
 
     Project.remove({ _id: req.params.id }, function(err) {

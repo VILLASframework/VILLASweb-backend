@@ -20,7 +20,7 @@ router.route('/users').get(auth.validateAdminLevel(1), function(req, res) {
       return res.send(err);
     }
 
-    res.json(users);
+    res.json({ users: users });
   });
 });
 
@@ -33,7 +33,7 @@ router.route('/users').post(function(req, res) {
       return res.send(err);
     }
 
-    res.send({ success: true, message: 'User added' });
+    res.send({ user: user });
   });
 });
 
@@ -45,8 +45,8 @@ router.route('/users/:id').put(auth.validateAdminLevel(1), function(req, res) {
     }
 
     // update all properties
-    for (property in req.body) {
-      user[property] = req.body[property];
+    for (property in req.body.user) {
+      user[property] = req.body.user[property];
     }
 
     // save the changes
@@ -55,8 +55,21 @@ router.route('/users/:id').put(auth.validateAdminLevel(1), function(req, res) {
         return res.send(err);
       }
 
-      res.send({ success: true, message: 'User updated' });
+      res.send({ user: user });
     });
+  });
+});
+
+router.route('/users/me').get(function(req, res) {
+  // get the logged-in user ID
+  var userId = req.decoded._doc._id;
+
+  User.findOne({ _id: userId }, function(err, user) {
+    if (err) {
+      return res.send(err);
+    }
+
+    res.send({ user: user });
   });
 });
 
@@ -66,7 +79,7 @@ router.route('/users/:id').get(auth.validateAdminLevel(1), function(req, res) {
       return res.send(err);
     }
 
-    res.send(user);
+    res.send({ user: user });
   });
 });
 
