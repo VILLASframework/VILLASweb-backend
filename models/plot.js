@@ -9,7 +9,8 @@ var plotSchema = new Schema({
   signal: { type: String, required: true },
   width: { type: Number, required: true },
   height: { type: Number, required: true },
-  title: { type: String }
+  title: { type: String },
+  type: { type: String, required: true }
 });
 
 module.exports = mongoose.model('Plot', plotSchema);

@@ -90,7 +90,7 @@ router.route('/projects/:id').delete(function(req, res) {
       return res.send(err);
     }
 
-    res.send({ project: project });
+    res.send({});
   });
 });
 

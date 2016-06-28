@@ -74,7 +74,7 @@ router.route('/plots/:id').delete(function(req, res) {
       return res.send(err);
     }
 
-    res.send({ plot: plot });
+    res.send({});
   });
 });
 

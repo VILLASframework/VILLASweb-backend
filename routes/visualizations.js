@@ -74,7 +74,7 @@ router.route('/visualizations/:id').delete(function(req, res) {
       return res.send(err);
     }
 
-    res.send({ visualization: visualization });
+    res.send({});
   });
 });
 

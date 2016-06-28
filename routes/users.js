@@ -89,7 +89,7 @@ router.route('/users/:id').delete(auth.validateAdminLevel(1), function(req, res)
       return res.send(err);
     }
 
-    res.send({ user: user });
+    res.send({});
   });
 });
 
