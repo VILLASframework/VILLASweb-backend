@@ -84,12 +84,12 @@ router.route('/users/:id').get(auth.validateAdminLevel(1), function(req, res) {
 });
 
 router.route('/users/:id').delete(auth.validateAdminLevel(1), function(req, res) {
-  User.remove({ _id: req.params.id }, function(err) {
+  User.remove({ _id: req.params.id }, function(err, user) {
     if (err) {
       return res.send(err);
     }
 
-    res.send({ success: true, message: 'User deleted' });
+    res.send({ user: user });
   });
 });
 

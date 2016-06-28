@@ -51,7 +51,7 @@ router.route('/projects').post(function(req, res) {
   });
 });
 
-router.route('/projects/:id').patch(function(req, res) {
+router.route('/projects/:id').put(function(req, res) {
   // get project
   Project.findOne({ _id: req.params.id }, function(err, project) {
     if (err) {
@@ -85,18 +85,12 @@ router.route('/projects/:id').get(function(req, res) {
 });
 
 router.route('/projects/:id').delete(function(req, res) {
-  Project.findOne({ _id: req.params.id }, function(err, project) {
+  Project.remove({ _id: req.params.id }, function(err, project) {
     if (err) {
       return res.send(err);
     }
 
-    Project.remove({ _id: req.params.id }, function(err) {
-      if (err) {
-        return res.send(err);
-      }
-
-      res.send({ success: true, message: 'Project deleted' });
-    });
+    res.send({ project: project });
   });
 });
 
