@@ -33,7 +33,7 @@ router.get('/projects', function(req, res) {
       return res.send(err);
     }
 
-    res.json({ projects: projects });
+    res.send({ projects: projects });
   });
 });
 

@@ -10,6 +10,8 @@ var config = require('./config');
 
 var users = require('./routes/users');
 var projects = require('./routes/projects');
+var visualizations = require('./routes/visualizations');
+var plots = require('./routes/plots')
 
 var User = require('./models/user');
 
@@ -28,6 +30,8 @@ mongoose.connect(config.databaseURL + config.databaseName);
 // register routes
 app.use('/api/v1', users);
 app.use('/api/v1', projects);
+app.use('/api/v1', visualizations);
+app.use('/api/v1', plots);
 
 // start the app
 app.listen(config.port, function() {
