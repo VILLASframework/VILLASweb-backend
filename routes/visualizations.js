@@ -1,8 +1,11 @@
 // include
 var express = require('express');
 
-var Visualization = require('../models/visualization');
 var auth = require('../auth');
+
+// models
+var Visualization = require('../models/visualization');
+var Project = require('../models/project');
 
 // create router
 var router = express.Router();
@@ -32,6 +35,21 @@ router.route('/visualizations').post(function(req, res) {
     }
 
     res.send({ visualization: visualization });
+  });
+
+  // add visualization to project
+  Project.findOne({ _id: visualization.project }, function(err, project) {
+    if (err) {
+      return console.log(err);
+    }
+
+    project.visualizations.push(visualization._id);
+
+    project.save(function(err) {
+      if (err) {
+        return console.log(err);
+      }
+    });
   });
 });
 
@@ -69,12 +87,38 @@ router.route('/visualizations/:id').get(function(req, res) {
 });
 
 router.route('/visualizations/:id').delete(function(req, res) {
-  Visualization.remove({ _id: req.params.id }, function(err, visualization) {
+  Visualization.findOne({ _id: req.params.id }, function(err, visualization) {
     if (err) {
       return res.send(err);
     }
 
-    res.send({});
+    // remove from project's list
+    Project.findOne({ _id: visualization.project }, function(err, project) {
+      if (err) {
+        return console.log(err);
+      }
+
+      for (var i = 0; i < project.visualizations.length; i++) {
+        var id = String(project.visualizations[i]);
+        if (id == visualization._id) {
+          project.visualizations.splice(i, 1);
+        }
+      }
+
+      project.save(function(err) {
+        if (err) {
+          return console.log(err);
+        }
+      });
+    });
+
+    visualization.remove(function(err) {
+      if (err) {
+        return res.send(err);
+      }
+
+      res.send({});
+    });
   });
 });
 

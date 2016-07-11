@@ -2,6 +2,8 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 
+var Project = require('./project');
+
 var Schema = mongoose.Schema;
 
 // user model
@@ -9,8 +11,8 @@ var userSchema = new Schema({
   username: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   adminLevel: { type: Number, default: 0 },
-  projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
-  mail: { type: String }
+  projects: [{ type: Schema.Types.ObjectId, ref: 'Project', default: [] }],
+  mail: { type: String, default: "" }
 });
 
 userSchema.methods.verifyPassword = function(password, callback) {
@@ -51,6 +53,26 @@ userSchema.pre('save', function(callback) {
       callback();
     });
   });
+});
+
+// execute before the user is deleted
+userSchema.pre('remove', function(callback) {
+  // delete all projects belonging to this user
+  this.projects.forEach(function(id) {
+    Project.findOne({ _id: id}, function(err, project) {
+      if (err) {
+        return console.log(err);
+      }
+
+      project.remove(function(err) {
+        if (err) {
+          return console.log(err);
+        }
+      });
+    });
+  });
+
+  callback();
 });
 
 module.exports = mongoose.model('User', userSchema);

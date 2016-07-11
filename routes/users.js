@@ -2,9 +2,11 @@
 var express = require('express');
 var jwt = require('jsonwebtoken');
 
-var User = require('../models/user');
 var auth = require('../auth');
 var config = require('../config');
+
+// models
+var User = require('../models/user');
 
 // create router
 var router = express.Router();
@@ -26,7 +28,7 @@ router.route('/users').get(auth.validateAdminLevel(1), function(req, res) {
 
 router.route('/users').post(auth.validateAdminLevel(1), function(req, res) {
   // create new user
-  var user = new User(req.body);
+  var user = new User(req.body.user);
 
   user.save(function(err) {
     if (err) {
@@ -44,10 +46,14 @@ router.route('/users/:id').put(function(req, res) {
       return res.send(err);
     }
 
+    if (user == null) {
+      return res.status(404).send({});
+    }
+
     // if user is not an admin, only allow some changes on own data
 
     // update all properties
-    if (user.adminLevel >= 1) {
+    if (req.decoded._doc.adminLevel >= 1) {
       for (property in req.body.user) {
         user[property] = req.body.user[property];
       }
@@ -99,12 +105,18 @@ router.route('/users/:id').get(auth.validateAdminLevel(1), function(req, res) {
 });
 
 router.route('/users/:id').delete(auth.validateAdminLevel(1), function(req, res) {
-  User.remove({ _id: req.params.id }, function(err, user) {
+  User.findOne({ _id: req.params.id }, function(err, user) {
     if (err) {
       return res.send(err);
     }
 
-    res.send({});
+    user.remove(function(err) {
+      if (err) {
+        return res.send(err);
+      }
+
+      res.send({});
+    });
   });
 });
 

@@ -1,8 +1,11 @@
 // include
 var express = require('express');
 
-var Project = require('../models/project');
 var auth = require('../auth');
+
+// models
+var Project = require('../models/project');
+var User = require('../models/user');
 
 // create router
 var router = express.Router();
@@ -46,8 +49,22 @@ router.route('/projects').post(function(req, res) {
       return res.send(err);
     }
 
-    //res.send({ success: true, message: 'Project added', project: project });
     res.send({ project: project });
+  });
+
+  // add project to user
+  User.findOne({ _id: project.owner }, function(err, user) {
+    if (err) {
+      return console.log(err);
+    }
+
+    user.projects.push(project._id);
+
+    user.save(function(err) {
+      if (err) {
+        console.log(err);
+      }
+    });
   });
 });
 
@@ -85,12 +102,38 @@ router.route('/projects/:id').get(function(req, res) {
 });
 
 router.route('/projects/:id').delete(function(req, res) {
-  Project.remove({ _id: req.params.id }, function(err, project) {
+  Project.findOne({ _id: req.params.id }, function(err, project) {
     if (err) {
       return res.send(err);
     }
 
-    res.send({});
+    // remove from owner's list
+    User.findOne({ _id: project.owner }, function(err, user) {
+      if (err) {
+        return console.log(err);
+      }
+
+      for (var i = 0; user.projects.length; i++) {
+        var id = String(user.projects[i]);
+        if (id == project._id) {
+          user.projects.splice(i, 1);
+        }
+      }
+
+      user.save(function(err) {
+        if (err) {
+          return console.log(err);
+        }
+      });
+    });
+
+    project.remove(function(err) {
+      if (err) {
+        return res.send(err);
+      }
+
+      res.send({});
+    });
   });
 });
 

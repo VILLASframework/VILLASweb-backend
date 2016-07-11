@@ -9,5 +9,6 @@ This is the backend for the VILLASweb frontend. It is build upon NodeJS, Express
  - Add support for config.js with docker volumes
  - Add support for key-secret for bcrypt
  - Let user change own properties if not admin
- - Model IDs readonly
- - Handle relations server side
+ - Add local console log to res.send(err) calls
+ - Add proper 404 to all routes
+ - Add relationship from plot to visualization
