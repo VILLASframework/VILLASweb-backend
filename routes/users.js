@@ -24,7 +24,7 @@ router.route('/users').get(auth.validateAdminLevel(1), function(req, res) {
   });
 });
 
-router.route('/users').post(function(req, res) {
+router.route('/users').post(auth.validateAdminLevel(1), function(req, res) {
   // create new user
   var user = new User(req.body);
 
@@ -37,16 +37,31 @@ router.route('/users').post(function(req, res) {
   });
 });
 
-router.route('/users/:id').put(auth.validateAdminLevel(1), function(req, res) {
+router.route('/users/:id').put(function(req, res) {
   // get user
   User.findOne({ _id: req.params.id }, function(err, user) {
     if (err) {
       return res.send(err);
     }
 
+    // if user is not an admin, only allow some changes on own data
+
     // update all properties
-    for (property in req.body.user) {
-      user[property] = req.body.user[property];
+    if (user.adminLevel >= 1) {
+      for (property in req.body.user) {
+        user[property] = req.body.user[property];
+      }
+    } else if (req.decoded._doc._id === req.params.id) {
+      // only copy the allowed properties since the user is not an admin
+      for (property in req.body.user) {
+        if (property === '_id' || property === 'adminLevel') {
+          continue;
+        }
+
+        user[property] = req.body.user[property];
+      }
+    } else {
+      return res.send({ success: false, message: 'Invalid authorization' });
     }
 
     // save the changes
