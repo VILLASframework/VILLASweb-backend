@@ -59,7 +59,7 @@ userSchema.pre('save', function(callback) {
 userSchema.pre('remove', function(callback) {
   // delete all projects belonging to this user
   this.projects.forEach(function(id) {
-    Project.findOne({ _id: id}, function(err, project) {
+    Project.findOne({ _id: id }, function(err, project) {
       if (err) {
         return console.log(err);
       }

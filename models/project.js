@@ -15,7 +15,7 @@ var projectSchema = new Schema({
 projectSchema.pre('remove', function(callback) {
   // delete all visualizations belonging to this project
   this.visualizations.forEach(function(id) {
-    Visualization.findOne({ _id: id}, function(err, visualization) {
+    Visualization.findOne({ _id: id }, function(err, visualization) {
       if (err) {
         return console.log(err);
       }

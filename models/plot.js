@@ -10,7 +10,10 @@ var plotSchema = new Schema({
   width: { type: Number, required: true },
   height: { type: Number, required: true },
   title: { type: String },
-  type: { type: String, required: true }
+  type: { type: String, required: true },
+  row: { type: Number, default: 0 },
+  column: { type: Number, default: 0 },
+  visualization: { type: Schema.Types.ObjectId, ref: 'Visualization' }
 });
 
 module.exports = mongoose.model('Plot', plotSchema);
