@@ -11,7 +11,8 @@ var config = require('./config');
 var users = require('./routes/users');
 var projects = require('./routes/projects');
 var visualizations = require('./routes/visualizations');
-var plots = require('./routes/plots')
+var plots = require('./routes/plots');
+var models = require('./routes/models');
 
 var User = require('./models/user');
 
@@ -32,6 +33,7 @@ app.use('/api/v1', users);
 app.use('/api/v1', projects);
 app.use('/api/v1', visualizations);
 app.use('/api/v1', plots);
+app.use('/api/v1', models);
 
 // start the app
 app.listen(config.port, function() {

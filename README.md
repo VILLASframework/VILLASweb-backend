@@ -14,3 +14,4 @@ This is the backend for the VILLASweb frontend. It is build upon NodeJS, Express
  - Add proper error messages to all routes
  - Handle missing objects (e.g. visualization is removed and belonging project does not exist anymore)
  - Save model creation date
+ - Add project/visualization sharing
