@@ -1,5 +1,5 @@
 /**
- * File: models.js
+ * File: simulationModels.js
  * Author: Markus Grigull <mgrigull@eonerc.rwth-aachen.de>
  * Date: 19.07.2016
  * Copyright: 2016, Institute for Automation of Complex Power Systems, EONERC
@@ -13,45 +13,46 @@ var express = require('express');
 var auth = require('../auth');
 
 // models
-var Model = require('../models/model');
+var SimulationModel = require('../models/simulationModel');
+var User = require('../models/user');
 
 // create router
 var router = express.Router();
 
 // all model routes need authentication
-router.use('/models', auth.validateToken);
+router.use('/simulationModels', auth.validateToken);
 
 // routes
-router.get('/models', function(req, res) {
+router.get('/simulationModels', function(req, res) {
   // get all models
-  Model.find(function(err, models) {
+  SimulationModel.find(function(err, models) {
     if (err) {
       return res.send(err);
     }
 
-    res.send({ models: models });
+    res.send({ simulationModel: models });
   });
 });
 
-router.post('/models', function(req, res) {
+router.post('/simulationModels', function(req, res) {
   // create new model
-  var model = new Model(req.body.model);
+  var model = new SimulationModel(req.body.simulationModel);
 
   model.save(function(err) {
     if (err) {
       return res.send(err);
     }
 
-    res.send({ model: model });
+    res.send({ simulationModel: model });
   });
 
   // add model to user
-  Model.findOne({ _id: model.owner }, function(err, user) {
+  User.findOne({ _id: model.owner }, function(err, user) {
     if (err) {
       return console.log(err);
     }
 
-    user.models.push(model._id);
+    user.simulationModels.push(model._id);
 
     user.save(function(err) {
       if (err) {
@@ -61,16 +62,16 @@ router.post('/models', function(req, res) {
   });
 });
 
-router.put('/models/:id', function(req, res) {
+router.put('/simulationModels/:id', function(req, res) {
   // get model
-  Model.findOne({ _id: req.params.id }, function(err, model) {
+  SimulationModel.findOne({ _id: req.params.id }, function(err, model) {
     if (err) {
       return res.send(err);
     }
 
     // update all properties
-    for (property in req.body.model) {
-      model[property] = req.body.model[property];
+    for (property in req.body.simulationModel) {
+      model[property] = req.body.simulationModel[property];
     }
 
     // save the changes
@@ -79,23 +80,23 @@ router.put('/models/:id', function(req, res) {
         return res.send(err);
       }
 
-      res.send({ model: model });
+      res.send({ simulationModel: model });
     });
   });
 });
 
-router.get('/models/:id', function(req, res) {
-  Model.findOne({ _id: req.params.id }, function(err, model) {
+router.get('/simulationModels/:id', function(req, res) {
+  SimulationModel.findOne({ _id: req.params.id }, function(err, model) {
     if (err) {
       return res.send(err);
     }
 
-    res.send({ model: model });
+    res.send({ simulationModel: model });
   });
 });
 
-router.delete('/models/:id', function(req, res) {
-  Model.findOne({ _id: req.params.id }, function(err, model) {
+router.delete('/simulationModels/:id', function(req, res) {
+  SimulationModel.findOne({ _id: req.params.id }, function(err, model) {
     if (err) {
       return res.send(err);
     }
@@ -106,10 +107,10 @@ router.delete('/models/:id', function(req, res) {
         return console.log(err);
       }
 
-      for (var i = 0; user.models.length; i++) {
-        var id = String(user.models[i]);
+      for (var i = 0; user.simulationModels.length; i++) {
+        var id = String(user.simulationModels[i]);
         if (id == model._id) {
-          user.models.splice(i, 1);
+          user.simulationModels.splice(i, 1);
         }
       }
 

@@ -1,5 +1,5 @@
 /**
- * File: app.js
+ * File: server.js
  * Author: Markus Grigull <mgrigull@eonerc.rwth-aachen.de>
  * Date: 04.07.2016
  * Copyright: 2016, Institute for Automation of Complex Power Systems, EONERC
@@ -21,7 +21,7 @@ var users = require('./routes/users');
 var projects = require('./routes/projects');
 var visualizations = require('./routes/visualizations');
 var plots = require('./routes/plots');
-var models = require('./routes/models');
+var simulationModels = require('./routes/simulationModels');
 
 var User = require('./models/user');
 
@@ -42,7 +42,7 @@ app.use('/api/v1', users);
 app.use('/api/v1', projects);
 app.use('/api/v1', visualizations);
 app.use('/api/v1', plots);
-app.use('/api/v1', models);
+app.use('/api/v1', simulationModels);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
