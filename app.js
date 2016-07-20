@@ -1,3 +1,12 @@
+/**
+ * File: app.js
+ * Author: Markus Grigull <mgrigull@eonerc.rwth-aachen.de>
+ * Date: 04.07.2016
+ * Copyright: 2016, Institute for Automation of Complex Power Systems, EONERC
+ *   This file is part of VILLASweb. All Rights Reserved. Proprietary and confidential.
+ *   Unauthorized copying of this file, via any medium is strictly prohibited.
+ **********************************************************************************/
+
 // include modules
 var express = require('express');
 var mongoose = require('mongoose');
@@ -34,6 +43,27 @@ app.use('/api/v1', projects);
 app.use('/api/v1', visualizations);
 app.use('/api/v1', plots);
 app.use('/api/v1', models);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+// development error handler
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', { message: err.message, error: err });
+  });
+}
+
+// production error handler
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', { message: err.message, error: {} });
+});
 
 // start the app
 app.listen(config.port, function() {

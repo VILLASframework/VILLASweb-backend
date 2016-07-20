@@ -1,3 +1,12 @@
+/**
+ * File: users.js
+ * Author: Markus Grigull <mgrigull@eonerc.rwth-aachen.de>
+ * Date: 26.06.2016
+ * Copyright: 2016, Institute for Automation of Complex Power Systems, EONERC
+ *   This file is part of VILLASweb. All Rights Reserved. Proprietary and confidential.
+ *   Unauthorized copying of this file, via any medium is strictly prohibited.
+ **********************************************************************************/
+
 // include
 var express = require('express');
 var jwt = require('jsonwebtoken');
@@ -19,7 +28,7 @@ router.route('/users').get(auth.validateAdminLevel(1), function(req, res) {
   // get all users
   User.find(function(err, users) {
     if (err) {
-      return res.send(err);
+      return next(err);
     }
 
     res.json({ users: users });
