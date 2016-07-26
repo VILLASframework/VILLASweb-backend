@@ -12,7 +12,7 @@ var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 
 var Project = require('./project');
-var SimulationModel = require('./simulationModel');
+var Simulation = require('./simulation');
 
 var Schema = mongoose.Schema;
 
@@ -23,7 +23,7 @@ var userSchema = new Schema({
   adminLevel: { type: Number, default: 0 },
   projects: [{ type: Schema.Types.ObjectId, ref: 'Project', default: [] }],
   mail: { type: String, default: "" },
-  simulationModel: [{ type: Schema.Types.ObjectId, ref: 'Model', default: [] }]
+  simulations: [{ type: Schema.Types.ObjectId, ref: 'Simulation', default: [] }]
 });
 
 userSchema.methods.verifyPassword = function(password, callback) {
@@ -83,14 +83,14 @@ userSchema.pre('remove', function(callback) {
     });
   });
 
-  // delete all models belonging to this user
-  this.simulationModels.forEach(function(id) {
-    SimulationModel.findOne({ _id: id }, function(err, model) {
+  // delete all simulations belonging to this user
+  this.simulations.forEach(function(id) {
+    Simulation.findOne({ _id: id }, function(err, simulation) {
       if (err) {
         return console.log(err);
       }
 
-      model.remove(function(err) {
+      simulation.remove(function(err) {
         if (err) {
           return console.log(err);
         }

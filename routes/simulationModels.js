@@ -14,7 +14,7 @@ var auth = require('../auth');
 
 // models
 var SimulationModel = require('../models/simulationModel');
-var User = require('../models/user');
+var Simulation = require('../models/simulation');
 
 // create router
 var router = express.Router();
@@ -46,15 +46,15 @@ router.post('/simulationModels', function(req, res) {
     res.send({ simulationModel: model });
   });
 
-  // add model to user
-  User.findOne({ _id: model.owner }, function(err, user) {
+  // add model to simulation
+  Simulation.findOne({ _id: model.simulation }, function(err, simulation) {
     if (err) {
       return console.log(err);
     }
 
-    user.simulationModels.push(model._id);
+    simulation.models.push(model._id);
 
-    user.save(function(err) {
+    simulation.save(function(err) {
       if (err) {
         console.log(err);
       }
@@ -101,20 +101,20 @@ router.delete('/simulationModels/:id', function(req, res) {
       return res.send(err);
     }
 
-    // remove from owner's list
-    User.findOne({ _id: model.owner }, function(err, user) {
+    // remove from simulation's list
+    Simulation.findOne({ _id: model.simulation }, function(err, simulation) {
       if (err) {
         return console.log(err);
       }
 
-      for (var i = 0; user.simulationModels.length; i++) {
-        var id = String(user.simulationModels[i]);
+      for (var i = 0; simulation.models.length; i++) {
+        var id = String(simulation.models[i]);
         if (id == model._id) {
-          user.simulationModels.splice(i, 1);
+          simulation.models.splice(i, 1);
         }
       }
 
-      user.save(function(err) {
+      simulation.save(function(err) {
         if (err) {
           return console.log(err);
         }

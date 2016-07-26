@@ -15,9 +15,10 @@ var Schema = mongoose.Schema;
 // simulation model model
 var simulationModelSchema = new Schema({
   name: { type: String, required: true },
-  running: { type: Boolean, default: false },
-  projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
-  owner: { type: Schema.Types.ObjectId, ref: 'User' }
+  simulator: { type: Number, required: true },
+  length: { type: Number, default: 1 },
+  mapping: [{ type: String, default: [] }],
+  simulation: { type: Schema.Types.ObjectId, ref: 'Simulation' }
 });
 
 module.exports = mongoose.model('SimulationModel', simulationModelSchema);

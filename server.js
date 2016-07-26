@@ -21,6 +21,7 @@ var users = require('./routes/users');
 var projects = require('./routes/projects');
 var visualizations = require('./routes/visualizations');
 var plots = require('./routes/plots');
+var simulations = require('./routes/simulations');
 var simulationModels = require('./routes/simulationModels');
 
 var User = require('./models/user');
@@ -42,6 +43,7 @@ app.use('/api/v1', users);
 app.use('/api/v1', projects);
 app.use('/api/v1', visualizations);
 app.use('/api/v1', plots);
+app.use('/api/v1', simulations);
 app.use('/api/v1', simulationModels);
 
 // catch 404 and forward to error handler

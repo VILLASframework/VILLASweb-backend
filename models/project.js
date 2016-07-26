@@ -18,7 +18,8 @@ var Schema = mongoose.Schema;
 var projectSchema = new Schema({
   name: { type: String, required: true },
   owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  visualizations: [{ type: Schema.Types.ObjectId, ref: 'Visualization' }]
+  visualizations: [{ type: Schema.Types.ObjectId, ref: 'Visualization', default: [] }],
+  simulation: [{ type: Schema.Types.ObjectId, ref: 'Simulation' }]
 });
 
 projectSchema.pre('remove', function(callback) {
