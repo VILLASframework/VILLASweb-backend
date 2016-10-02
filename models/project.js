@@ -19,7 +19,7 @@ var projectSchema = new Schema({
   name: { type: String, required: true },
   owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   visualizations: [{ type: Schema.Types.ObjectId, ref: 'Visualization', default: [] }],
-  simulation: [{ type: Schema.Types.ObjectId, ref: 'Simulation' }]
+  simulation: { type: Schema.Types.ObjectId, ref: 'Simulation', required: true }
 });
 
 projectSchema.pre('remove', function(callback) {

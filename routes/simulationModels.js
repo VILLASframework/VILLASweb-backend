@@ -27,7 +27,7 @@ router.get('/simulationModels', function(req, res) {
   // get all models
   SimulationModel.find(function(err, models) {
     if (err) {
-      return res.send(err);
+      return res.status(400).send(err);
     }
 
     res.send({ simulationModel: models });
@@ -40,24 +40,24 @@ router.post('/simulationModels', function(req, res) {
 
   model.save(function(err) {
     if (err) {
-      return res.send(err);
+      return res.status(400).send(err);
     }
 
-    res.send({ simulationModel: model });
-  });
-
-  // add model to simulation
-  Simulation.findOne({ _id: model.simulation }, function(err, simulation) {
-    if (err) {
-      return console.log(err);
-    }
-
-    simulation.models.push(model._id);
-
-    simulation.save(function(err) {
+    // add model to simulation
+    Simulation.findOne({ _id: model.simulation }, function(err, simulation) {
       if (err) {
-        console.log(err);
+        return res.status(500).send(err);
       }
+
+      simulation.models.push(model._id);
+
+      simulation.save(function(err) {
+        if (err) {
+          return res.status(500).send(err);
+        }
+
+        res.send({ simulationModel: model });
+      });
     });
   });
 });
@@ -66,7 +66,7 @@ router.put('/simulationModels/:id', function(req, res) {
   // get model
   SimulationModel.findOne({ _id: req.params.id }, function(err, model) {
     if (err) {
-      return res.send(err);
+      return res.status(400).send(err);
     }
 
     // update all properties
@@ -77,7 +77,7 @@ router.put('/simulationModels/:id', function(req, res) {
     // save the changes
     model.save(function(err) {
       if (err) {
-        return res.send(err);
+        return res.status(500).send(err);
       }
 
       res.send({ simulationModel: model });
@@ -88,7 +88,7 @@ router.put('/simulationModels/:id', function(req, res) {
 router.get('/simulationModels/:id', function(req, res) {
   SimulationModel.findOne({ _id: req.params.id }, function(err, model) {
     if (err) {
-      return res.send(err);
+      return res.status(400).send(err);
     }
 
     res.send({ simulationModel: model });
@@ -98,13 +98,13 @@ router.get('/simulationModels/:id', function(req, res) {
 router.delete('/simulationModels/:id', function(req, res) {
   SimulationModel.findOne({ _id: req.params.id }, function(err, model) {
     if (err) {
-      return res.send(err);
+      return res.status(400).send(err);
     }
 
     // remove from simulation's list
     Simulation.findOne({ _id: model.simulation }, function(err, simulation) {
       if (err) {
-        return console.log(err);
+        return res.status(500).send(err);
       }
 
       for (var i = 0; simulation.models.length; i++) {
@@ -116,17 +116,17 @@ router.delete('/simulationModels/:id', function(req, res) {
 
       simulation.save(function(err) {
         if (err) {
-          return console.log(err);
+          return res.status(500).send(err);
         }
+
+        model.remove(function(err) {
+          if (err) {
+            return res.status(500).send(err);
+          }
+
+          res.send({});
+        });
       });
-    });
-
-    model.remove(function(err) {
-      if (err) {
-        return res.send(err);
-      }
-
-      res.send({});
     });
   });
 });

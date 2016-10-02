@@ -5,7 +5,7 @@ This is the backend for the VILLASweb frontend. It is build upon NodeJS, Express
 
 ## To-Do
  - Don't send user password (select: false)
- - Only get projects which are accessible by the user
+ - Only get objects which are accessible by the user
  - Add support for config.js with docker volumes
  - Add support for key-secret for bcrypt
  - Let user change own properties if not admin
@@ -13,5 +13,6 @@ This is the backend for the VILLASweb frontend. It is build upon NodeJS, Express
  - Add proper 404 to all routes
  - Add proper error messages to all routes
  - Handle missing objects (e.g. visualization is removed and belonging project does not exist anymore)
- - Save model creation date
- - Add project/visualization sharing
+ - Save objects creation date
+ - Add object sharing
+ - Add project to simulation when updating

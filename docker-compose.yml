@@ -4,6 +4,8 @@ node:
     - "3000:3000"
   links:
     - mongo
+  environment:
+    - NODE_ENV=development
 
 mongo:
   image: mongo

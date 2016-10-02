@@ -23,6 +23,7 @@ var visualizations = require('./routes/visualizations');
 var plots = require('./routes/plots');
 var simulations = require('./routes/simulations');
 var simulationModels = require('./routes/simulationModels');
+var simulators = require('./routes/simulators');
 
 var User = require('./models/user');
 
@@ -45,6 +46,7 @@ app.use('/api/v1', visualizations);
 app.use('/api/v1', plots);
 app.use('/api/v1', simulations);
 app.use('/api/v1', simulationModels);
+app.use('/api/v1', simulators);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -57,14 +59,14 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error', { message: err.message, error: err });
+    res.send({ error: err, message: err.message });
   });
 }
 
 // production error handler
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
-  res.render('error', { message: err.message, error: {} });
+  res.send({ error: {}, message: err.message });
 });
 
 // start the app

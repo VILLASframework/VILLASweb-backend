@@ -40,24 +40,25 @@ router.post('/simulations', function(req, res) {
 
   simulation.save(function(err) {
     if (err) {
-      return res.send(err);
+      return res.status(400).send(err);
     }
 
-    res.send({ simulation: simulation });
-  });
-
-  // add simulation to user
-  User.findOne({ _id: simulation.owner }, function(err, user) {
-    if (err) {
-      return console.log(err);
-    }
-
-    user.simulations.push(simulation._id);
-
-    user.save(function(err) {
+    // add simulation to user
+    User.findOne({ _id: simulation.owner }, function(err, user) {
       if (err) {
-        console.log(err);
+        return res.status(400).send(err);
       }
+
+      user.simulations.push(simulation._id);
+
+      user.save(function(err) {
+        if (err) {
+          res.status(500).send(err);
+        }
+
+        // send response
+        res.send({ simulation: simulation });
+      });
     });
   });
 });
@@ -66,7 +67,7 @@ router.put('/simulations/:id', function(req, res) {
   // get simulation
   Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
-      return res.send(err);
+      return res.status(400).send(err);
     }
 
     // update all properties
@@ -77,7 +78,7 @@ router.put('/simulations/:id', function(req, res) {
     // save the changes
     simulation.save(function(err) {
       if (err) {
-        return res.send(err);
+        return res.status(400).send(err);
       }
 
       res.send({ simulation: simulation });
@@ -98,13 +99,13 @@ router.get('/simulations/:id', function(req, res) {
 router.delete('/simulations/:id', function(req, res) {
   Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
-      return res.send(err);
+      return res.status(400).send(err);
     }
 
     // remove from owner's list
     User.findOne({ _id: simulation.owner }, function(err, user) {
       if (err) {
-        return console.log(err);
+        return res.status(500).send(err);
       }
 
       for (var i = 0; user.simulations.length; i++) {
@@ -116,17 +117,18 @@ router.delete('/simulations/:id', function(req, res) {
 
       user.save(function(err) {
         if (err) {
-          return console.log(err);
+          return res.status(500).send(err);
         }
+
+        // remove simulation itself
+        simulation.remove(function(err) {
+          if (err) {
+            return res.status(500).send(err);
+          }
+
+          res.send({});
+        });
       });
-    });
-
-    simulation.remove(function(err) {
-      if (err) {
-        return res.send(err);
-      }
-
-      res.send({});
     });
   });
 });
