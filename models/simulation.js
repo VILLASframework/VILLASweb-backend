@@ -11,6 +11,7 @@
  var mongoose = require('mongoose');
 
  var SimulationModel = require('./simulationModel');
+ var Project = require('./project');
 
  var Schema = mongoose.Schema;
 
@@ -24,7 +25,7 @@
  });
 
  simulationSchema.pre('remove', function(callback) {
-   // delete all models belonging to this project
+   // delete all models belonging to this simulation
    this.models.forEach(function(id) {
      SimulationModel.findOne({ _id: id }, function(err, model) {
        if (err) {
@@ -32,6 +33,21 @@
        }
 
        model.remove(function(err) {
+         if (err) {
+           return console.log(err);
+         }
+       });
+     });
+   });
+
+   // delete all projects belonging to this simulation
+   this.projects.forEach(function(id) {
+     Project.findOne({ _id: id }, function(err, project) {
+       if (err) {
+         return console.log(err);
+       }
+
+       project.remove(function(err) {
          if (err) {
            return console.log(err);
          }

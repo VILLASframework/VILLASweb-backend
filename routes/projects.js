@@ -86,6 +86,79 @@ router.put('/projects/:id', function(req, res) {
       return res.status(400).send(err);
     }
 
+    // update relationships
+    if (req.body.project.owner && req.body.project.owner !== project.owner) {
+      // remove from old user
+      User.findOne({ _id: project.owner }, function(err, user) {
+        if (err) {
+          return console.log(err);
+        }
+
+        for (var i = 0; i < user.projects; i++) {
+          if (user.projects[i] === project._id) {
+            user.projects.splice(i, 1);
+          }
+        }
+
+        user.save(function(err) {
+          if (err) {
+            return console.log(err);
+          }
+        });
+      });
+
+      // add to new user
+      User.findOne({ _id: req.body.project.owner }, function(err, user) {
+        if (err) {
+          return console.log(err);
+        }
+
+        user.projects.push(project._id);
+
+        user.save(function(err) {
+          if (err) {
+            return console.log(err);
+          }
+        });
+      });
+    }
+
+    if (req.body.project.simulation && req.body.project.simulation !== project.simulation) {
+      // remove from old simulation
+      Simulation.findOne({ _id: project.simulation }, function(err, simulation) {
+        if (err) {
+          return console.log(err);
+        }
+
+        for (var i = 0; i < simulation.projects; i++) {
+          if (simulation.projects[i] === project._id) {
+            simulation.projects.splice(i, 1);
+          }
+        }
+
+        simulation.save(function(err) {
+          if (err) {
+            return console.log(err);
+          }
+        });
+      });
+
+      // add to new user
+      Simulation.findOne({ _id: req.body.project.simulation }, function(err, simulation) {
+        if (err) {
+          return console.log(err);
+        }
+
+        simulation.projects.push(project._id);
+
+        simulation.save(function(err) {
+          if (err) {
+            return console.log(err);
+          }
+        });
+      });
+    }
+
     // update all properties
     for (property in req.body.project) {
       project[property] = req.body.project[property];

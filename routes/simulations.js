@@ -70,6 +70,43 @@ router.put('/simulations/:id', function(req, res) {
       return res.status(400).send(err);
     }
 
+    // update relationships
+    if (req.body.simulation.owner && req.body.simulation.owner !== simulation.owner) {
+      // remove from old user
+      User.findOne({ _id: simulation.owner }, function(err, user) {
+        if (err) {
+          return console.log(err);
+        }
+
+        for (var i = 0; i < user.simulations; i++) {
+          if (user.simulations[i] === simulation._id) {
+            user.simulations.splice(i, 1);
+          }
+        }
+
+        user.save(function(err) {
+          if (err) {
+            return console.log(err);
+          }
+        });
+      });
+
+      // add to new user
+      User.findOne({ _id: req.body.simulation.owner }, function(err, user) {
+        if (err) {
+          return console.log(err);
+        }
+
+        user.simulations.push(simulation._id);
+
+        user.save(function(err) {
+          if (err) {
+            return console.log(err);
+          }
+        });
+      });
+    }
+
     // update all properties
     for (property in req.body.simulation) {
       simulation[property] = req.body.simulation[property];

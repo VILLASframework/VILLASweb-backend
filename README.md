@@ -15,4 +15,3 @@ This is the backend for the VILLASweb frontend. It is build upon NodeJS, Express
  - Handle missing objects (e.g. visualization is removed and belonging project does not exist anymore)
  - Save objects creation date
  - Add object sharing
- - Add project to simulation when updating

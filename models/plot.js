@@ -16,6 +16,7 @@ var Schema = mongoose.Schema;
 var plotSchema = new Schema({
   name: { type: String, required: true },
   signal: { type: String, required: true },
+  simulator: { type: Number, required: true },
   width: { type: Number, required: true },
   height: { type: Number, required: true },
   title: { type: String },
