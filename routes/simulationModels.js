@@ -23,7 +23,7 @@ var router = express.Router();
 router.use('/simulationModels', auth.validateToken);
 
 // routes
-router.get('/simulationModels', function(req, res) {
+router.get('/simulationModels', auth.validateRole('simulationModel', 'read'), function(req, res) {
   // get all models
   SimulationModel.find(function(err, models) {
     if (err) {
@@ -34,7 +34,7 @@ router.get('/simulationModels', function(req, res) {
   });
 });
 
-router.post('/simulationModels', function(req, res) {
+router.post('/simulationModels', auth.validateRole('simulationModel', 'create'), function(req, res) {
   // create new model
   var model = new SimulationModel(req.body.simulationModel);
 
@@ -62,7 +62,7 @@ router.post('/simulationModels', function(req, res) {
   });
 });
 
-router.put('/simulationModels/:id', function(req, res) {
+router.put('/simulationModels/:id', auth.validateRole('simulationModel', 'update'), function(req, res) {
   // get model
   SimulationModel.findOne({ _id: req.params.id }, function(err, model) {
     if (err) {
@@ -85,7 +85,7 @@ router.put('/simulationModels/:id', function(req, res) {
   });
 });
 
-router.get('/simulationModels/:id', function(req, res) {
+router.get('/simulationModels/:id', auth.validateRole('simulationModel', 'read'), function(req, res) {
   SimulationModel.findOne({ _id: req.params.id }, function(err, model) {
     if (err) {
       return res.status(400).send(err);
@@ -95,7 +95,7 @@ router.get('/simulationModels/:id', function(req, res) {
   });
 });
 
-router.delete('/simulationModels/:id', function(req, res) {
+router.delete('/simulationModels/:id', auth.validateRole('simulationModel', 'delete'), function(req, res) {
   SimulationModel.findOne({ _id: req.params.id }, function(err, model) {
     if (err) {
       return res.status(400).send(err);

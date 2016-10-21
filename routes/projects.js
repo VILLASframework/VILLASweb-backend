@@ -24,7 +24,7 @@ var router = express.Router();
 router.use('/projects', auth.validateToken);
 
 // routes
-router.get('/projects', function(req, res) {
+router.get('/projects', auth.validateRole('project', 'read'), function(req, res) {
   // get all projects
   Project.find(function(err, projects) {
     if (err) {
@@ -35,7 +35,7 @@ router.get('/projects', function(req, res) {
   });
 });
 
-router.post('/projects', function(req, res) {
+router.post('/projects', auth.validateRole('project', 'create'), function(req, res) {
   // create new project
   var project = new Project(req.body.project);
 
@@ -79,7 +79,7 @@ router.post('/projects', function(req, res) {
   });
 });
 
-router.put('/projects/:id', function(req, res) {
+router.put('/projects/:id', auth.validateRole('project', 'update'), function(req, res) {
   // get project
   Project.findOne({ _id: req.params.id }, function(err, project) {
     if (err) {
@@ -175,7 +175,7 @@ router.put('/projects/:id', function(req, res) {
   });
 });
 
-router.get('/projects/:id', function(req, res) {
+router.get('/projects/:id', auth.validateRole('project', 'read'), function(req, res) {
   Project.findOne({ _id: req.params.id }, function(err, project) {
     if (err) {
       return res.status(400).send(err);
@@ -185,7 +185,7 @@ router.get('/projects/:id', function(req, res) {
   });
 });
 
-router.delete('/projects/:id', function(req, res) {
+router.delete('/projects/:id', auth.validateRole('project', 'delete'), function(req, res) {
   Project.findOne({ _id: req.params.id }, function(err, project) {
     if (err) {
       return res.status(400).send(err);

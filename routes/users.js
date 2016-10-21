@@ -24,7 +24,7 @@ var router = express.Router();
 router.use('/users', auth.validateToken);
 
 // routes
-router.route('/users').get(auth.validateAdminLevel(1), function(req, res) {
+router.get('/users', auth.validateRole('user', 'read'), function(req, res) {
   // get all users
   User.find(function(err, users) {
     if (err) {
@@ -35,7 +35,7 @@ router.route('/users').get(auth.validateAdminLevel(1), function(req, res) {
   });
 });
 
-router.route('/users').post(auth.validateAdminLevel(1), function(req, res) {
+router.post('/users', auth.validateRole('user', 'create'), function(req, res) {
   // create new user
   var user = new User(req.body.user);
 
@@ -48,7 +48,7 @@ router.route('/users').post(auth.validateAdminLevel(1), function(req, res) {
   });
 });
 
-router.route('/users/:id').put(function(req, res) {
+router.put('/users/:id', auth.validateRole('user', 'update'), function(req, res) {
   // get user
   User.findOne({ _id: req.params.id }, function(err, user) {
     if (err) {
@@ -90,7 +90,8 @@ router.route('/users/:id').put(function(req, res) {
   });
 });
 
-router.route('/users/me').get(function(req, res) {
+// This route needs no role validation, since it just requests the current user
+router.get('/users/me', function(req, res) {
   // get the logged-in user ID
   var userId = req.decoded._doc._id;
 
@@ -103,7 +104,7 @@ router.route('/users/me').get(function(req, res) {
   });
 });
 
-router.route('/users/:id').get(auth.validateAdminLevel(1), function(req, res) {
+router.get('/users/:id', auth.validateRole('user', 'read'), function(req, res) {
   User.findOne({ _id: req.params.id }, function(err, user) {
     if (err) {
       return res.send(err);
@@ -113,7 +114,7 @@ router.route('/users/:id').get(auth.validateAdminLevel(1), function(req, res) {
   });
 });
 
-router.route('/users/:id').delete(auth.validateAdminLevel(1), function(req, res) {
+router.delete('/users/:id', auth.validateRole('user', 'delete'), function(req, res) {
   User.findOne({ _id: req.params.id }, function(err, user) {
     if (err) {
       return res.send(err);

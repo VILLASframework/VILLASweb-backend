@@ -85,7 +85,7 @@ if (config.admin) {
 
     if (!user) {
       // create new admin user
-      var newUser = User({ username: config.admin.username, password: config.admin.password, adminLevel: 1});
+      var newUser = User({ username: config.admin.username, password: config.admin.password, role: 'admin' });
       newUser.save(function(err) {
         if (err) {
           console.log(err);

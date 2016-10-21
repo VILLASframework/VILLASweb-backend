@@ -11,6 +11,7 @@
 var jwt = require('jsonwebtoken');
 
 var config = require('./config');
+var roles = require('./roles');
 
 module.exports = {
   validateToken: function(req, res, next) {
@@ -31,14 +32,16 @@ module.exports = {
     });
   },
 
-  validateAdminLevel: function(requiredLevel) {
+  validateRole: function(resource, action) {
     return function(req, res, next) {
-      // check admin level
-      var userLevel = req.decoded._doc.adminLevel;
-      if (userLevel >= requiredLevel) {
+      // get user role
+      var role = roles[req.decoded._doc.role];
+      if (role.resource[resource].indexOf(action) > -1) {
+        // item found in list
         next();
       } else {
-        return res.status(401).send({ success: false, message: 'Invalid authorization' });
+        // item not found
+        return res.status(403).send({ success: false, message: 'Action not permitted' });
       }
     }
   }

@@ -20,7 +20,7 @@ var Visualization = require('../models/visualization')
 var router = express.Router();
 
 // all plot routes need authentication
-router.use('/plots', auth.validateToken);
+router.use('/plots', auth.validateRole('visualization', 'read'), auth.validateToken);
 
 // routes
 router.get('/plots', function(req, res) {
@@ -34,7 +34,7 @@ router.get('/plots', function(req, res) {
   });
 });
 
-router.route('/plots').post(function(req, res) {
+router.post('/plots', auth.validateRole('visualization', 'create'), function(req, res) {
   // create new plot
   var plot = new Plot(req.body.plot);
 
@@ -62,7 +62,7 @@ router.route('/plots').post(function(req, res) {
   });
 });
 
-router.route('/plots/:id').put(function(req, res) {
+router.put('/plots/:id', auth.validateRole('visualization', 'update'), function(req, res) {
   // get plot
   Plot.findOne({ _id: req.params.id }, function(err, plot) {
     if (err) {
@@ -85,7 +85,7 @@ router.route('/plots/:id').put(function(req, res) {
   });
 });
 
-router.route('/plots/:id').get(function(req, res) {
+router.get('/plots/:id', auth.validateRole('visualization', 'read'), function(req, res) {
   Plot.findOne({ _id: req.params.id }, function(err, plot) {
     if (err) {
       return res.send(err);
@@ -95,7 +95,7 @@ router.route('/plots/:id').get(function(req, res) {
   });
 });
 
-router.route('/plots/:id').delete(function(req, res) {
+router.delete('/plots/:id', auth.validateRole('visualization', 'delete'), function(req, res) {
   Plot.findOne({ _id: req.params.id }, function(err, plot) {
     if (err) {
       return res.send(err);

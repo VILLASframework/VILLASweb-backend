@@ -23,7 +23,7 @@ var router = express.Router();
 router.use('/simulations', auth.validateToken);
 
 // routes
-router.get('/simulations', function(req, res) {
+router.get('/simulations', auth.validateRole('simulation', 'read'), function(req, res) {
   // get all simulations
   Simulation.find(function(err, simulations) {
     if (err) {
@@ -34,7 +34,7 @@ router.get('/simulations', function(req, res) {
   });
 });
 
-router.post('/simulations', function(req, res) {
+router.post('/simulations', auth.validateRole('simulation', 'create'), function(req, res) {
   // create new simulation
   var simulation = new Simulation(req.body.simulation);
 
@@ -63,7 +63,7 @@ router.post('/simulations', function(req, res) {
   });
 });
 
-router.put('/simulations/:id', function(req, res) {
+router.put('/simulations/:id', auth.validateRole('simulation', 'update'), function(req, res) {
   // get simulation
   Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
@@ -123,7 +123,7 @@ router.put('/simulations/:id', function(req, res) {
   });
 });
 
-router.get('/simulations/:id', function(req, res) {
+router.get('/simulations/:id', auth.validateRole('simulation', 'read'), function(req, res) {
   Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
       return res.send(err);
@@ -133,7 +133,7 @@ router.get('/simulations/:id', function(req, res) {
   });
 });
 
-router.delete('/simulations/:id', function(req, res) {
+router.delete('/simulations/:id', auth.validateRole('simulation', 'delete'), function(req, res) {
   Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
       return res.status(400).send(err);
