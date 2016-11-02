@@ -9,7 +9,6 @@
 
 module.exports = {
   admin: {
-    id: 'admin',
     name: 'Admin',
     description: '',
     resource: {
@@ -22,7 +21,6 @@ module.exports = {
     }
   },
   user: {
-    id: 'user',
     name: 'User',
     description: '',
     resource: {
@@ -31,7 +29,6 @@ module.exports = {
     }
   },
   guest: {
-    id: 'guest',
     name: 'Guest',
     description: '',
     resource: {

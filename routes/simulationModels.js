@@ -24,7 +24,7 @@ router.use('/simulationModels', auth.validateToken);
 
 // routes
 router.get('/simulationModels', auth.validateRole('simulationModel', 'read'), function(req, res) {
-  // get all models
+  // get all user simulations
   SimulationModel.find(function(err, models) {
     if (err) {
       return res.status(400).send(err);

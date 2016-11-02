@@ -24,8 +24,10 @@ router.use('/simulations', auth.validateToken);
 
 // routes
 router.get('/simulations', auth.validateRole('simulation', 'read'), function(req, res) {
-  // get all simulations
-  Simulation.find(function(err, simulations) {
+  // get all user simulations
+  var userId = req.decoded._doc._id;
+
+  Simulation.find({ owner: userId }, function(err, simulations) {
     if (err) {
       return res.send(err);
     }
@@ -34,7 +36,7 @@ router.get('/simulations', auth.validateRole('simulation', 'read'), function(req
   });
 });
 
-router.post('/simulations', auth.validateRole('simulation', 'create'), function(req, res) {
+router.post('/simulations', auth.validateRole('simulation', 'create'), auth.validateOwner('simulation'), function(req, res) {
   // create new simulation
   var simulation = new Simulation(req.body.simulation);
 
@@ -68,6 +70,11 @@ router.put('/simulations/:id', auth.validateRole('simulation', 'update'), functi
   Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
       return res.status(400).send(err);
+    }
+
+    // validate owner
+    if (simulation.owner != req.decoded._doc._id) {
+      return res.status(403).send({ success: false, message: 'User is not owner' });
     }
 
     // update relationships
@@ -129,7 +136,12 @@ router.get('/simulations/:id', auth.validateRole('simulation', 'read'), function
       return res.send(err);
     }
 
-    res.send({ simulation: simulation });
+    // validate owner
+    if (simulation.owner == req.decoded._doc._id) {
+      res.send({ simulation: simulation });
+    } else {
+      res.status(403).send({ success: false, message: 'User is not owner' });
+    }
   });
 });
 
@@ -137,6 +149,11 @@ router.delete('/simulations/:id', auth.validateRole('simulation', 'delete'), fun
   Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
       return res.status(400).send(err);
+    }
+
+    // validate owner
+    if (simulation.owner != req.decoded._doc._id) {
+      return res.status(403).send({ success: false, message: 'User is not owner' });
     }
 
     // remove from owner's list

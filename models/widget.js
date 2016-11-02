@@ -1,5 +1,5 @@
 /**
- * File: plot.js
+ * File: widget.js
  * Author: Markus Grigull <mgrigull@eonerc.rwth-aachen.de>
  * Date: 28.06.2016
  * Copyright: 2016, Institute for Automation of Complex Power Systems, EONERC
@@ -12,8 +12,8 @@ var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
 
-// plot model
-var plotSchema = new Schema({
+// widget model
+var widgetSchema = new Schema({
   name: { type: String, required: true },
   signal: { type: String, required: true },
   simulator: { type: Number, required: true },
@@ -26,4 +26,4 @@ var plotSchema = new Schema({
   visualization: { type: Schema.Types.ObjectId, ref: 'Visualization' }
 });
 
-module.exports = mongoose.model('Plot', plotSchema);
+module.exports = mongoose.model('Widget', widgetSchema);

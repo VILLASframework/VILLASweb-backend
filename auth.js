@@ -35,6 +35,11 @@ module.exports = {
   validateRole: function(resource, action) {
     return function(req, res, next) {
       // get user role
+      if (!req.decoded) {
+        // no logged in user
+        return res.status(403).send({ success: false, message: 'Authentication missing' });
+      }
+
       var role = roles[req.decoded._doc.role];
       if (role.resource[resource].indexOf(action) > -1) {
         // item found in list
@@ -43,6 +48,22 @@ module.exports = {
         // item not found
         return res.status(403).send({ success: false, message: 'Action not permitted' });
       }
-    }
+    };
+  },
+
+  validateOwner: function(model) {
+    return function(req, res, next) {
+      // get owner id from request
+      var owner = req.body[model].owner;
+      var userId = req.decoded._doc._id;
+
+      if (owner === userId) {
+        // owner is logged in user
+        next();
+      } else {
+        // owner is not user
+        return res.status(403).send({ success: false, message: 'User is not owner' });
+      }
+    };
   }
 }
