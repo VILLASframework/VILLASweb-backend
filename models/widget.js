@@ -15,11 +15,9 @@ var Schema = mongoose.Schema;
 // widget model
 var widgetSchema = new Schema({
   name: { type: String, required: true },
-  signal: { type: String, required: true },
-  simulator: { type: Number, required: true },
+  widgetData: { type: Schema.Types.Mixed, default: {} },
   width: { type: Number, required: true },
   height: { type: Number, required: true },
-  title: { type: String },
   type: { type: String, required: true },
   x: { type: Number, default: 0 },
   y: { type: Number, default: 0 },
