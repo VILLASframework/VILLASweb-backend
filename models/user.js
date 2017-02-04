@@ -23,7 +23,8 @@ var userSchema = new Schema({
   role: { type: String, required: true, default: 'user' },
   projects: [{ type: Schema.Types.ObjectId, ref: 'Project', default: [] }],
   mail: { type: String, default: "" },
-  simulations: [{ type: Schema.Types.ObjectId, ref: 'Simulation', default: [] }]
+  simulations: [{ type: Schema.Types.ObjectId, ref: 'Simulation', default: [] }],
+  files: [{type: Schema.Types.ObjectId, ref: 'File', default: [] }]
 });
 
 userSchema.methods.verifyPassword = function(password, callback) {

@@ -1,6 +1,6 @@
 {
   "name": "VILLASweb-backend",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "main": "server.js",
   "dependencies": {
@@ -8,6 +8,7 @@
     "body-parser": "^1.15.2",
     "cors": "^2.7.1",
     "express": "^4.14.0",
+    "formidable": "^1.0.17",
     "jsonwebtoken": "^7.0.1",
     "mongoose": "^4.5.1",
     "morgan": "^1.7.0"

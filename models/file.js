@@ -1,7 +1,7 @@
 /**
- * File: widget.js
+ * File: file.js
  * Author: Markus Grigull <mgrigull@eonerc.rwth-aachen.de>
- * Date: 28.06.2016
+ * Date: 25.01.2017
  * Copyright: 2016, Institute for Automation of Complex Power Systems, EONERC
  *   This file is part of VILLASweb. All Rights Reserved. Proprietary and confidential.
  *   Unauthorized copying of this file, via any medium is strictly prohibited.
@@ -12,16 +12,13 @@ var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
 
-// widget model
-var widgetSchema = new Schema({
+// file model
+var fileSchema = new Schema({
   name: { type: String },
-  widgetData: { type: Schema.Types.Mixed, default: {} },
-  width: { type: Number, required: true },
-  height: { type: Number, required: true },
-  type: { type: String, required: true },
-  x: { type: Number, default: 0 },
-  y: { type: Number, default: 0 },
-  visualization: { type: Schema.Types.ObjectId, ref: 'Visualization' }
+  path: { type: String, required: true },
+  type: { type: String },
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  date: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Widget', widgetSchema);
+module.exports = mongoose.model('File', fileSchema);

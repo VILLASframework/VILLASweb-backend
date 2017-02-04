@@ -24,6 +24,8 @@ var widgets = require('./routes/widgets');
 var simulations = require('./routes/simulations');
 var simulationModels = require('./routes/simulationModels');
 var simulators = require('./routes/simulators');
+var upload = require('./routes/upload');
+var files = require('./routes/files');
 
 var User = require('./models/user');
 
@@ -47,6 +49,10 @@ app.use('/api/v1', widgets);
 app.use('/api/v1', simulations);
 app.use('/api/v1', simulationModels);
 app.use('/api/v1', simulators);
+app.use('/api/v1', upload);
+app.use('/api/v1', files);
+
+app.use('/public', express.static(__dirname + '/public'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
