@@ -16,7 +16,6 @@
  var simulatorSchema = new Schema({
    name: { type: String, required: true },
    running: { type: Boolean, default: false },
-   simulatorid: { type: Number, required: true },
    endpoint: { type: String, required: true }
  });
 

@@ -19,8 +19,9 @@
  var simulationSchema = new Schema({
    name: { type: String, required: true },
    running: { type: Boolean, default: false },
-   owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-   models: [{ type: Schema.Types.ObjectId, ref: 'SimulationModel', default: [] }],
+   /*owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },*/
+   /*models: [{ type: Schema.Types.ObjectId, ref: 'SimulationModel', default: [] }],*/
+   models: { type: Array, default: [] },
    projects: [{ type: Schema.Types.ObjectId, ref: 'Project', default: [] }]
  });
 

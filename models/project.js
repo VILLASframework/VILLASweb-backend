@@ -17,7 +17,7 @@ var Schema = mongoose.Schema;
 // project model
 var projectSchema = new Schema({
   name: { type: String, required: true },
-  owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  /*owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },*/
   visualizations: [{ type: Schema.Types.ObjectId, ref: 'Visualization', default: [] }],
   simulation: { type: Schema.Types.ObjectId, ref: 'Simulation', required: true }
 });

@@ -21,6 +21,7 @@ var widgetSchema = new Schema({
   type: { type: String, required: true },
   x: { type: Number, default: 0 },
   y: { type: Number, default: 0 },
+  z: { type: Number, default: 0 },
   visualization: { type: Schema.Types.ObjectId, ref: 'Visualization' }
 });
 

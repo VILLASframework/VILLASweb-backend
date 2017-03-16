@@ -10,19 +10,29 @@
 // include
 var express = require('express');
 
-var auth = require('../auth');
+//var auth = require('../auth');
 
 // models
 var File = require('../models/file');
-var User = require('../models/user');
+//var User = require('../models/user');
 
 // create router
 var router = express.Router();
 
 // all file routes need authentication
-router.use('/files', auth.validateToken);
+//router.use('/files', auth.validateToken);
 
 // routes
+router.get('/files', function(req, res) {
+  File.find(function(err, files) {
+    if (err) {
+      return res.status(400).send(err);
+    }
+
+    res.send({ files: files });
+  });
+});
+
 router.get('/files/:id', function(req, res) {
   File.findOne({ _id: req.params.id }, function(err, file) {
     if (err) {
@@ -30,6 +40,22 @@ router.get('/files/:id', function(req, res) {
     }
 
     res.send({ file: file });
+  });
+});
+
+router.delete('/files/:id', function(req, res) {
+  File.findOne({ _id: req.params.id }, function(err, file) {
+    if (err) {
+      return res.status(400).send(err);
+    }
+
+    file.remove(function(err) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+
+      res.send({});
+    });
   });
 });
 
