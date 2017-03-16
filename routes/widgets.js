@@ -10,7 +10,7 @@
 // include
 var express = require('express');
 
-var auth = require('../auth');
+//var auth = require('../auth');
 
 // models
 var Widget = require('../models/widget');
@@ -20,10 +20,10 @@ var Visualization = require('../models/visualization');
 var router = express.Router();
 
 // all widget routes need authentication
-router.use('/widgets', auth.validateToken);
+//router.use('/widgets', auth.validateToken);
 
 // routes
-router.get('/widgets', auth.validateRole('visualization', 'read'), function(req, res) {
+router.get('/widgets', /*auth.validateRole('visualization', 'read'),*/ function(req, res) {
   // get all widgets
   Widget.find(function(err, widgets) {
     if (err) {
@@ -34,7 +34,7 @@ router.get('/widgets', auth.validateRole('visualization', 'read'), function(req,
   });
 });
 
-router.post('/widgets', auth.validateRole('visualization', 'create'), function(req, res) {
+router.post('/widgets', /*auth.validateRole('visualization', 'create'),*/ function(req, res) {
   // create new widget
   var widget = new Widget(req.body.widget);
 
@@ -62,7 +62,7 @@ router.post('/widgets', auth.validateRole('visualization', 'create'), function(r
   });
 });
 
-router.put('/widgets/:id', auth.validateRole('visualization', 'update'), function(req, res) {
+router.put('/widgets/:id', /*auth.validateRole('visualization', 'update'),*/ function(req, res) {
   // get widget
   Widget.findOne({ _id: req.params.id }, function(err, widget) {
     if (err) {
@@ -85,7 +85,7 @@ router.put('/widgets/:id', auth.validateRole('visualization', 'update'), functio
   });
 });
 
-router.get('/widgets/:id', auth.validateRole('visualization', 'read'), function(req, res) {
+router.get('/widgets/:id', /*auth.validateRole('visualization', 'read'),*/ function(req, res) {
   Widget.findOne({ _id: req.params.id }, function(err, widget) {
     if (err) {
       return res.send(err);
@@ -95,7 +95,7 @@ router.get('/widgets/:id', auth.validateRole('visualization', 'read'), function(
   });
 });
 
-router.delete('/widgets/:id', auth.validateRole('visualization', 'delete'), function(req, res) {
+router.delete('/widgets/:id', /*auth.validateRole('visualization', 'delete'),*/ function(req, res) {
   Widget.findOne({ _id: req.params.id }, function(err, widget) {
     if (err) {
       return res.send(err);

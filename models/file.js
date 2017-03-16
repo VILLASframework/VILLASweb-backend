@@ -17,7 +17,7 @@ var fileSchema = new Schema({
   name: { type: String },
   path: { type: String, required: true },
   type: { type: String },
-  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  /*user: { type: Schema.Types.ObjectId, ref: 'User', required: true },*/
   date: { type: Date, default: Date.now }
 });
 

@@ -10,22 +10,23 @@
 // include
 var mongoose = require('mongoose');
 
-var Widget = require('./widget');
+//var Widget = require('./widget');
 
 var Schema = mongoose.Schema;
 
 // visualization model
 var visualizationSchema = new Schema({
   name: { type: String, required: true },
-  project: { type: Schema.Types.ObjectId, ref: 'Project', required: true },
-  widgets: [{ type: Schema.Types.ObjectId, ref: 'Widget' }],
-  rows: { type: Number, default: 1 }
+  project: { type: Schema.Types.ObjectId, ref: 'Project'/*, required: true*/ },
+  widgets: { type: Array, default: [] }
+  /*widgets: [{ type: Schema.Types.ObjectId, ref: 'Widget' }],
+  rows: { type: Number, default: 1 }*/
 });
 
 // execute before the visualization is deleted
 visualizationSchema.pre('remove', function(callback) {
   // delete all widgets belonging to this visualization
-  this.widgets.forEach(function(id) {
+  /*this.widgets.forEach(function(id) {
     Widget.findOne({ _id: id }, function(err, widget) {
       if (err) {
         return console.log(err);
@@ -37,7 +38,7 @@ visualizationSchema.pre('remove', function(callback) {
         }
       });
     });
-  });
+  });*/
 
   callback();
 });

@@ -10,7 +10,7 @@
 // include
 var express = require('express');
 
-var auth = require('../auth');
+//var auth = require('../auth');
 
 // models
 var Visualization = require('../models/visualization');
@@ -20,10 +20,10 @@ var Project = require('../models/project');
 var router = express.Router();
 
 // all visualization routes need authentication
-router.use('/visualizations', auth.validateToken);
+//router.use('/visualizations', auth.validateToken);
 
 // routes
-router.get('/visualizations', auth.validateRole('visualization', 'read'), function(req, res) {
+router.get('/visualizations', /*auth.validateRole('visualization', 'read'),*/ function(req, res) {
   // get all visualizations
   Visualization.find(function(err, visualizations) {
     if (err) {
@@ -34,7 +34,7 @@ router.get('/visualizations', auth.validateRole('visualization', 'read'), functi
   });
 });
 
-router.post('/visualizations', auth.validateRole('visualization', 'create'), function(req, res) {
+router.post('/visualizations', /*auth.validateRole('visualization', 'create'),*/ function(req, res) {
   // create new visualization
   var visualization = new Visualization(req.body.visualization);
 
@@ -62,7 +62,7 @@ router.post('/visualizations', auth.validateRole('visualization', 'create'), fun
   });
 });
 
-router.put('/visualizations/:id', auth.validateRole('visualization', 'update'), function(req, res) {
+router.put('/visualizations/:id', /*auth.validateRole('visualization', 'update'),*/ function(req, res) {
   // get visualization
   Visualization.findOne({ _id: req.params.id }, function(err, visualization) {
     if (err) {
@@ -85,7 +85,7 @@ router.put('/visualizations/:id', auth.validateRole('visualization', 'update'), 
   });
 });
 
-router.get('/visualizations/:id', auth.validateRole('visualization', 'read'), function(req, res) {
+router.get('/visualizations/:id', /*auth.validateRole('visualization', 'read'),*/ function(req, res) {
   Visualization.findOne({ _id: req.params.id }, function(err, visualization) {
     if (err) {
       return res.send(err);
@@ -95,7 +95,7 @@ router.get('/visualizations/:id', auth.validateRole('visualization', 'read'), fu
   });
 });
 
-router.delete('/visualizations/:id', auth.validateRole('visualization', 'delete'), function(req, res) {
+router.delete('/visualizations/:id', /*auth.validateRole('visualization', 'delete'),*/ function(req, res) {
   Visualization.findOne({ _id: req.params.id }, function(err, visualization) {
     if (err) {
       return res.send(err);

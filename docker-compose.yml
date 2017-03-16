@@ -1,5 +1,5 @@
 node:
-  image: acs/villasweb-backend
+  image: villasweb-backend
   ports:
     - "3000:3000"
   links:

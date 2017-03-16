@@ -10,7 +10,7 @@
 // include
 var express = require('express');
 
-var auth = require('../auth');
+//var auth = require('../auth');
 
 // models
 var Simulation = require('../models/simulation');
@@ -20,14 +20,11 @@ var User = require('../models/user');
 var router = express.Router();
 
 // all model routes need authentication
-router.use('/simulations', auth.validateToken);
+//router.use('/simulations', auth.validateToken);
 
 // routes
-router.get('/simulations', auth.validateRole('simulation', 'read'), function(req, res) {
-  // get all user simulations
-  var userId = req.decoded._doc._id;
-
-  Simulation.find({ owner: userId }, function(err, simulations) {
+router.get('/simulations', /*auth.validateRole('simulation', 'read'),*/ function(req, res) {
+  Simulation.find(function(err, simulations) {
     if (err) {
       return res.send(err);
     }
@@ -36,7 +33,7 @@ router.get('/simulations', auth.validateRole('simulation', 'read'), function(req
   });
 });
 
-router.post('/simulations', auth.validateRole('simulation', 'create'), auth.validateOwner('simulation'), function(req, res) {
+router.post('/simulations', /*auth.validateRole('simulation', 'create'), auth.validateOwner('simulation'),*/ function(req, res) {
   // create new simulation
   var simulation = new Simulation(req.body.simulation);
 
@@ -46,7 +43,7 @@ router.post('/simulations', auth.validateRole('simulation', 'create'), auth.vali
     }
 
     // add simulation to user
-    User.findOne({ _id: simulation.owner }, function(err, user) {
+    /*User.findOne({ _id: simulation.owner }, function(err, user) {
       if (err) {
         return res.status(400).send(err);
       }
@@ -58,27 +55,27 @@ router.post('/simulations', auth.validateRole('simulation', 'create'), auth.vali
           res.status(500).send(err);
         }
 
-        // send response
+        // send response*/
         res.send({ simulation: simulation });
-      });
-    });
+      /*});
+    });*/
   });
 });
 
-router.put('/simulations/:id', auth.validateRole('simulation', 'update'), function(req, res) {
+router.put('/simulations/:id', /*auth.validateRole('simulation', 'update'),*/ function(req, res) {
   // get simulation
   Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
       return res.status(400).send(err);
     }
 
-    // validate owner
+    /*// validate owner
     if (simulation.owner != req.decoded._doc._id) {
       return res.status(403).send({ success: false, message: 'User is not owner' });
-    }
+    }*/
 
     // update relationships
-    if (req.body.simulation.owner && req.body.simulation.owner !== simulation.owner) {
+    /*if (req.body.simulation.owner && req.body.simulation.owner !== simulation.owner) {
       // remove from old user
       User.findOne({ _id: simulation.owner }, function(err, user) {
         if (err) {
@@ -112,7 +109,7 @@ router.put('/simulations/:id', auth.validateRole('simulation', 'update'), functi
           }
         });
       });
-    }
+    }*/
 
     // update all properties
     for (property in req.body.simulation) {
@@ -130,34 +127,34 @@ router.put('/simulations/:id', auth.validateRole('simulation', 'update'), functi
   });
 });
 
-router.get('/simulations/:id', auth.validateRole('simulation', 'read'), function(req, res) {
+router.get('/simulations/:id', /*auth.validateRole('simulation', 'read'),*/ function(req, res) {
   Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
       return res.send(err);
     }
 
     // validate owner
-    if (simulation.owner == req.decoded._doc._id) {
-      res.send({ simulation: simulation });
+    /*if (simulation.owner == req.decoded._doc._id) {
+      */res.send({ simulation: simulation });/*
     } else {
       res.status(403).send({ success: false, message: 'User is not owner' });
-    }
+    }*/
   });
 });
 
-router.delete('/simulations/:id', auth.validateRole('simulation', 'delete'), function(req, res) {
+router.delete('/simulations/:id', /*auth.validateRole('simulation', 'delete'),*/ function(req, res) {
   Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
       return res.status(400).send(err);
     }
 
     // validate owner
-    if (simulation.owner != req.decoded._doc._id) {
+    /*if (simulation.owner != req.decoded._doc._id) {
       return res.status(403).send({ success: false, message: 'User is not owner' });
-    }
+    }*/
 
     // remove from owner's list
-    User.findOne({ _id: simulation.owner }, function(err, user) {
+    /*User.findOne({ _id: simulation.owner }, function(err, user) {
       if (err) {
         return res.status(500).send(err);
       }
@@ -172,7 +169,7 @@ router.delete('/simulations/:id', auth.validateRole('simulation', 'delete'), fun
       user.save(function(err) {
         if (err) {
           return res.status(500).send(err);
-        }
+        }*/
 
         // remove simulation itself
         simulation.remove(function(err) {
@@ -182,8 +179,8 @@ router.delete('/simulations/:id', auth.validateRole('simulation', 'delete'), fun
 
           res.send({});
         });
-      });
-    });
+      /*});
+    });*/
   });
 });
 

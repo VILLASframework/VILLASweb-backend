@@ -10,7 +10,7 @@
 // include
 var express = require('express');
 
-var auth = require('../auth');
+//var auth = require('../auth');
 
 // models
 var Simulator = require('../models/simulator');
@@ -19,10 +19,10 @@ var Simulator = require('../models/simulator');
 var router = express.Router();
 
 // all model routes need authentication
-router.use('/simulators', auth.validateToken);
+//router.use('/simulators', auth.validateToken);
 
 // routes
-router.get('/simulators', auth.validateRole('simulator', 'read'), function(req, res) {
+router.get('/simulators', /*auth.validateRole('simulator', 'read'),*/ function(req, res) {
   // get all simulators
   Simulator.find(function(err, simulators) {
     if (err) {
@@ -33,7 +33,7 @@ router.get('/simulators', auth.validateRole('simulator', 'read'), function(req, 
   });
 });
 
-router.post('/simulators', auth.validateRole('simulator', 'create'), function(req, res) {
+router.post('/simulators', /*auth.validateRole('simulator', 'create'),*/ function(req, res) {
   // create new simulator
   var simulator = new Simulator(req.body.simulator);
 
@@ -46,7 +46,7 @@ router.post('/simulators', auth.validateRole('simulator', 'create'), function(re
   });
 });
 
-router.put('/simulators/:id', auth.validateRole('simulator', 'update'), function(req, res) {
+router.put('/simulators/:id', /*auth.validateRole('simulator', 'update'),*/ function(req, res) {
   // get simulator
   Simulator.findOne({ _id: req.params.id }, function(err, simulator) {
     if (err) {
@@ -69,7 +69,7 @@ router.put('/simulators/:id', auth.validateRole('simulator', 'update'), function
   });
 });
 
-router.get('/simulators/:id', auth.validateRole('simulator', 'read'), function(req, res) {
+router.get('/simulators/:id', /*auth.validateRole('simulator', 'read'),*/ function(req, res) {
   Simulator.findOne({ _id: req.params.id }, function(err, simulator) {
     if (err) {
       return res.status(400).send(err);
@@ -79,7 +79,7 @@ router.get('/simulators/:id', auth.validateRole('simulator', 'read'), function(r
   });
 });
 
-router.delete('/simulators/:id', auth.validateRole('simulator', 'delete'), function(req, res) {
+router.delete('/simulators/:id', /*auth.validateRole('simulator', 'delete'),*/ function(req, res) {
   Simulator.findOne({ _id: req.params.id }, function(err, simulator) {
     if (err) {
       return res.status(400).send(err);
