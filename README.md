@@ -1,4 +1,4 @@
-# VILLASweb-backend
+# <img src="doc/pictures/villas_web.png" width=40 /> VILLASweb-backend
 
 ## Description
 This is the server for the VILLASweb website. The term __frontend__ refers to this project, the server the website (frontend) is talking to.
