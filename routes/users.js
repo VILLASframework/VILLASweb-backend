@@ -24,7 +24,7 @@ var express = require('express');
 var jwt = require('jsonwebtoken');
 
 var auth = require('../auth');
-var config = require('../config');
+var config = require('../config')[process.env.NODE_ENV || 'development'];
 
 // models
 var User = require('../models/user');

@@ -22,7 +22,7 @@
 // include
 var jwt = require('jsonwebtoken');
 
-var config = require('./config');
+var config = require('./config')[process.env.NODE_ENV || 'development'];
 var roles = require('./roles');
 
 module.exports = {
