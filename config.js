@@ -20,12 +20,24 @@
  ******************************************************************************/
 
 module.exports = {
-  databaseName: 'VILLAS',
-  databaseURL: 'mongodb://localhost:27017/',
-  port: 4000,
-  secret: 'longsecretislong',
-  admin: {
-    username: 'admin',
-    password: 'admin'
+  development: {
+    databaseName: 'VILLAS',
+    databaseURL: 'mongodb://localhost:27017/',
+    port: 4000,
+    secret: 'longsecretislong',
+    admin: {
+      username: 'admin',
+      password: 'admin'
+    }
+  },
+  production: {
+    databaseName: 'VILLAS',
+    databaseURL: 'mongodb://database:27017/',
+    port: 4000,
+    secret: 'longsecretislong',
+    admin: {
+      username: 'admin',
+      password: 'admin'
+    }
   }
-}
+};

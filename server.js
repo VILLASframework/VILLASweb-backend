@@ -27,8 +27,6 @@ var morgan = require('morgan');
 var cors = require('cors');
 
 // local include
-var config = require('./config');
-
 var users = require('./routes/users');
 var projects = require('./routes/projects');
 var visualizations = require('./routes/visualizations');
@@ -43,6 +41,9 @@ var User = require('./models/user');
 
 // create application
 var app = express();
+
+// load configuration
+var config = require('./config')[app.get('env')];
 
 // configure app
 app.use(bodyParser.json());
@@ -74,6 +75,8 @@ app.use(function(req, res, next) {
 });
 
 // development error handler
+console.log("Environment: " + app.get('env'));
+
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);

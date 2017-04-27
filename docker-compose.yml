@@ -1,13 +1,14 @@
-node:
-  image: villasweb-backend
-  ports:
-    - "3000:3000"
-  links:
-    - mongo
-  environment:
-    - NODE_ENV=development
+version: "2"
 
-mongo:
-  image: mongo
-  ports:
-    - "27017:27017"
+services:
+  backend:
+    image: villasweb-backend
+    ports:
+      - "4000:4000"
+    links:
+      - database
+    environment:
+      - NODE_ENV=production
+
+  database:
+    image: mongo:latest
