@@ -12,3 +12,4 @@ services:
 
   database:
     image: mongo:latest
+    user: mongodb

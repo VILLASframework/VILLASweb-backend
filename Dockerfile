@@ -1,4 +1,4 @@
-FROM node:argon
+FROM node:latest
 
 # Bundle app source
 COPY . .
