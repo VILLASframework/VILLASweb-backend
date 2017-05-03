@@ -38,7 +38,7 @@ router.use('/users', auth.validateToken);
 // routes
 router.get('/users', auth.validateRole('user', 'read'), function(req, res) {
   // get all users
-  User.find(function(err, users) {
+  User.find({}, 'username role mail', function(err, users) {
     if (err) {
       return next(err);
     }
