@@ -72,23 +72,22 @@ router.put('/users/:id', auth.validateRole('user', 'update'), function(req, res)
     }
 
     // if user is not an admin, only allow some changes on own data
-
     // update all properties
-    if (req.decoded._doc.adminLevel >= 1) {
+    if (req.decoded._doc.role === 'admin') {
       for (property in req.body.user) {
         user[property] = req.body.user[property];
       }
     } else if (req.decoded._doc._id === req.params.id) {
       // only copy the allowed properties since the user is not an admin
       for (property in req.body.user) {
-        if (property === '_id' || property === 'adminLevel') {
+        if (property === '_id') {
           continue;
         }
 
         user[property] = req.body.user[property];
       }
     } else {
-      return res.send({ success: false, message: 'Invalid authorization' });
+      return res.status(403).send({ success: false, message: 'Invalid authorization' });
     }
 
     // save the changes
