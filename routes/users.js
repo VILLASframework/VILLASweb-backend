@@ -48,16 +48,30 @@ router.get('/users', auth.validateRole('user', 'read'), function(req, res) {
 });
 
 router.post('/users', auth.validateRole('user', 'create'), function(req, res) {
-  // create new user
-  var user = new User(req.body.user);
-
-  user.save(function(err) {
+  // create new user, only if username hasn't been taken
+  
+  User.findOne({ username: req.body.user.username }, function(err, foundUser) {
     if (err) {
       return res.send(err);
     }
 
-    res.send({ user: user });
+    // If query was successful, the username has already been taken
+    if (foundUser) {
+      // Send a Bad Request response code
+      return res.status(400).send({ success: false, message: 'Username is already taken' });
+    }
+
+    var user = new User(req.body.user);
+
+    user.save(function(err) {
+      if (err) {
+        return res.send(err);
+      }
+
+      res.send({ user: user });
+    });
   });
+
 });
 
 router.put('/users/:id', auth.validateRole('user', 'update'), function(req, res) {
@@ -93,7 +107,9 @@ router.put('/users/:id', auth.validateRole('user', 'update'), function(req, res)
     // save the changes
     user.save(function(err) {
       if (err) {
-        return res.send(err);
+        // catch 'duplicate' errors, send a Bad Request response code
+        // Message is only valid as long as Username is the only unique field
+        return err.code === 11000? res.status(400).send({ success: false, message: 'Username is already taken' }) : res.send(err)
       }
 
       res.send({ user: user });
