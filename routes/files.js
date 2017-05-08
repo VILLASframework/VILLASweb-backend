@@ -22,11 +22,11 @@
 // include
 var express = require('express');
 
-//var auth = require('../auth');
+var auth = require('../auth');
 
 // models
 var File = require('../models/file');
-//var User = require('../models/user');
+var User = require('../models/user');
 
 // create router
 var router = express.Router();
@@ -35,14 +35,25 @@ var router = express.Router();
 //router.use('/files', auth.validateToken);
 
 // routes
-router.get('/files', function(req, res) {
-  File.find(function(err, files) {
+router.get('/files', auth.validateToken, function(req, res) {
+  
+  // find request author
+  User.findOne({ _id: req.decoded._doc._id }, function(err, user) {
     if (err) {
-      return res.status(400).send(err);
+      console.error('Could find user requesting files', err);
     }
+    
+    File.find({ _id: { $in : user.files } }, function(err, files) {
+      if (err) {
+        console.error('Error while querying files from user', error, user);
+        return res.status(500).send({ success: false, message: 'Could not retrieve user\'s files.' });
+      }
 
-    res.send({ files: files });
+      res.send({ files: files });
+    });
+
   });
+
 });
 
 router.get('/files/:id', function(req, res) {
