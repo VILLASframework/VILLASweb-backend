@@ -20,6 +20,7 @@
  ******************************************************************************/
 
 module.exports = {
+  publicDir: '../public',
   development: {
     databaseName: 'VILLAS',
     databaseURL: 'mongodb://localhost:27017/',
