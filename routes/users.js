@@ -38,7 +38,7 @@ router.use('/users', auth.validateToken);
 // routes
 router.get('/users', auth.validateRole('user', 'read'), function(req, res) {
   // get all users
-  User.find(function(err, users) {
+  User.find({}, 'username role mail', function(err, users) {
     if (err) {
       return next(err);
     }
@@ -48,16 +48,30 @@ router.get('/users', auth.validateRole('user', 'read'), function(req, res) {
 });
 
 router.post('/users', auth.validateRole('user', 'create'), function(req, res) {
-  // create new user
-  var user = new User(req.body.user);
-
-  user.save(function(err) {
+  // create new user, only if username hasn't been taken
+  
+  User.findOne({ username: req.body.user.username }, function(err, foundUser) {
     if (err) {
       return res.send(err);
     }
 
-    res.send({ user: user });
+    // If query was successful, the username has already been taken
+    if (foundUser) {
+      // Send a Bad Request response code
+      return res.status(400).send({ success: false, message: 'Username is already taken' });
+    }
+
+    var user = new User(req.body.user);
+
+    user.save(function(err) {
+      if (err) {
+        return res.send(err);
+      }
+
+      res.send({ user: user });
+    });
   });
+
 });
 
 router.put('/users/:id', auth.validateRole('user', 'update'), function(req, res) {
@@ -72,29 +86,30 @@ router.put('/users/:id', auth.validateRole('user', 'update'), function(req, res)
     }
 
     // if user is not an admin, only allow some changes on own data
-
     // update all properties
-    if (req.decoded._doc.adminLevel >= 1) {
+    if (req.decoded._doc.role === 'admin') {
       for (property in req.body.user) {
         user[property] = req.body.user[property];
       }
     } else if (req.decoded._doc._id === req.params.id) {
       // only copy the allowed properties since the user is not an admin
       for (property in req.body.user) {
-        if (property === '_id' || property === 'adminLevel') {
+        if (property === '_id') {
           continue;
         }
 
         user[property] = req.body.user[property];
       }
     } else {
-      return res.send({ success: false, message: 'Invalid authorization' });
+      return res.status(403).send({ success: false, message: 'Invalid authorization' });
     }
 
     // save the changes
     user.save(function(err) {
       if (err) {
-        return res.send(err);
+        // catch 'duplicate' errors, send a Bad Request response code
+        // Message is only valid as long as Username is the only unique field
+        return err.code === 11000? res.status(400).send({ success: false, message: 'Username is already taken' }) : res.send(err)
       }
 
       res.send({ user: user });
