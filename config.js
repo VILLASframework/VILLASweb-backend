@@ -26,6 +26,8 @@ module.exports = {
     databaseURL: 'mongodb://localhost:27017/',
     port: 4000,
     secret: 'longsecretislong',
+    logLevel: 'info',
+    logFile: 'log.txt',
     admin: {
       username: 'admin',
       password: 'admin'
@@ -36,6 +38,8 @@ module.exports = {
     databaseURL: 'mongodb://database:27017/',
     port: 4000,
     secret: 'longsecretislong',
+    logLevel: 'warn',
+    logFile: 'villasweb-backend_log.txt',
     admin: {
       username: 'admin',
       password: 'admin'

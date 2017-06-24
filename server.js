@@ -23,10 +23,12 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
-var morgan = require('morgan');
 var cors = require('cors');
+var winston = require('winston');
+var expressWinston = require('express-winston');
 
 // local include
+var logger = require('./utils/logger');
 var users = require('./routes/users');
 var projects = require('./routes/projects');
 var visualizations = require('./routes/visualizations');
@@ -45,10 +47,20 @@ var app = express();
 // load configuration
 var config = require('./config')[app.get('env')];
 
+// configure logger
+if (config.logLevel) {
+  logger.transports.console.level = config.logLevel;
+}
+
+if (config.logFile) {
+  logger.transports.file.filename = config.logFile;
+  logger.transports.file.silent = false;
+}
+
 // configure app
+app.use(expressWinston.logger({ winstonInstance: logger }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(morgan('dev'));
 app.use(cors());
 
 // connect to database
@@ -75,7 +87,7 @@ app.use(function(req, res, next) {
 });
 
 // development error handler
-console.log("Environment: " + app.get('env'));
+logger.info("Environment: " + app.get('env'));
 
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
@@ -92,7 +104,7 @@ app.use(function(err, req, res, next) {
 
 // start the app
 app.listen(config.port, function() {
-  console.log('Express server listening on port ' + config.port);
+  logger.info('Express server listening on port ' + config.port);
 });
 
 // add admin account
@@ -100,7 +112,7 @@ if (config.admin) {
   // check if admin account exists
   User.findOne({ username: config.admin.username }, function(err, user) {
     if (err) {
-      console.log(err);
+      logger.error(err);
       return;
     }
 
@@ -109,11 +121,11 @@ if (config.admin) {
       var newUser = User({ username: config.admin.username, password: config.admin.password, role: 'admin' });
       newUser.save(function(err) {
         if (err) {
-          console.log(err);
+          logger.error(err);
           return;
         }
 
-        console.log('Created default admin user from config file');
+        logger.warn('Created default admin user from config file');
       });
     }
   });
