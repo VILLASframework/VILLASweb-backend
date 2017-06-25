@@ -23,6 +23,7 @@
 var express = require('express');
 
 //var auth = require('../auth');
+var logger = require('../utils/logger');
 
 // models
 var Visualization = require('../models/visualization');
@@ -39,6 +40,7 @@ router.get('/visualizations', /*auth.validateRole('visualization', 'read'),*/ fu
   // get all visualizations
   Visualization.find(function(err, visualizations) {
     if (err) {
+      logger.error('Unable to receive visualizations', err);
       return res.send(err);
     }
 
@@ -52,6 +54,7 @@ router.post('/visualizations', /*auth.validateRole('visualization', 'create'),*/
 
   visualization.save(function(err) {
     if (err) {
+      logger.error('Unable to create visualization', err);
       return res.send(err);
     }
 
@@ -61,14 +64,16 @@ router.post('/visualizations', /*auth.validateRole('visualization', 'create'),*/
   // add visualization to project
   Project.findOne({ _id: visualization.project }, function(err, project) {
     if (err) {
-      return console.log(err);
+      logger.log('verbose', 'Unknown project for id: ' + visualization.project, visualization);
+      return;
     }
 
     project.visualizations.push(visualization._id);
 
     project.save(function(err) {
       if (err) {
-        return console.log(err);
+        logger.error('Unable to save project', project);
+        return;
       }
     });
   });
@@ -78,6 +83,7 @@ router.put('/visualizations/:id', /*auth.validateRole('visualization', 'update')
   // get visualization
   Visualization.findOne({ _id: req.params.id }, function(err, visualization) {
     if (err) {
+      logger.log('verbose', 'PUT Unknown visualization for id: ' + req.params.id);
       return res.send(err);
     }
 
@@ -89,6 +95,7 @@ router.put('/visualizations/:id', /*auth.validateRole('visualization', 'update')
     // save the changes
     visualization.save(function(err) {
       if (err) {
+        logger.error('Unable to save visualization', visualization);
         return res.send(err);
       }
 
@@ -100,6 +107,7 @@ router.put('/visualizations/:id', /*auth.validateRole('visualization', 'update')
 router.get('/visualizations/:id', /*auth.validateRole('visualization', 'read'),*/ function(req, res) {
   Visualization.findOne({ _id: req.params.id }, function(err, visualization) {
     if (err) {
+      logger.log('verbose', 'GET Unknown visualization for id: ' + req.params.id);
       return res.send(err);
     }
 
@@ -110,13 +118,15 @@ router.get('/visualizations/:id', /*auth.validateRole('visualization', 'read'),*
 router.delete('/visualizations/:id', /*auth.validateRole('visualization', 'delete'),*/ function(req, res) {
   Visualization.findOne({ _id: req.params.id }, function(err, visualization) {
     if (err) {
+      logger.log('verbose', 'DELETE Unknown visualization for id: ' + req.params.id);
       return res.send(err);
     }
 
     // remove from project's list
     Project.findOne({ _id: visualization.project }, function(err, project) {
       if (err) {
-        return console.log(err);
+        logger.log('verbose', 'Unknown project for id: ' + visualization.project);
+        return;
       }
 
       for (var i = 0; i < project.visualizations.length; i++) {
@@ -128,13 +138,15 @@ router.delete('/visualizations/:id', /*auth.validateRole('visualization', 'delet
 
       project.save(function(err) {
         if (err) {
-          return console.log(err);
+          logger.error('Unable to save project', project);
+          return;
         }
       });
     });
 
     visualization.remove(function(err) {
       if (err) {
+        logger.error('Unable to remove visualization', visualization);
         return res.send(err);
       }
 

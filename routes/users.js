@@ -25,6 +25,7 @@ var jwt = require('jsonwebtoken');
 
 var auth = require('../auth');
 var config = require('../config')[process.env.NODE_ENV || 'development'];
+var logger = require('../utils/logger');
 
 // models
 var User = require('../models/user');
@@ -40,6 +41,7 @@ router.get('/users', auth.validateRole('user', 'read'), function(req, res) {
   // get all users
   User.find({}, 'username role mail', function(err, users) {
     if (err) {
+      logger.error('Unable to receive users', err);
       return next(err);
     }
 
@@ -49,15 +51,17 @@ router.get('/users', auth.validateRole('user', 'read'), function(req, res) {
 
 router.post('/users', auth.validateRole('user', 'create'), function(req, res) {
   // create new user, only if username hasn't been taken
-  
+
   User.findOne({ username: req.body.user.username }, function(err, foundUser) {
     if (err) {
+      logger.error('Unable to create user', err);
       return res.send(err);
     }
 
     // If query was successful, the username has already been taken
     if (foundUser) {
       // Send a Bad Request response code
+      logger.log('verbose', 'Unable to create user with existing username: ' + req.body.user.username);
       return res.status(400).send({ success: false, message: 'Username is already taken' });
     }
 
@@ -65,6 +69,7 @@ router.post('/users', auth.validateRole('user', 'create'), function(req, res) {
 
     user.save(function(err) {
       if (err) {
+        logger.error('Unable to create user', { err, user });
         return res.send(err);
       }
 
@@ -78,10 +83,12 @@ router.put('/users/:id', auth.validateRole('user', 'update'), function(req, res)
   // get user
   User.findOne({ _id: req.params.id }, function(err, user) {
     if (err) {
+      logger.log('verbose', 'PUT Unknown user for id: ' + req.params.id);
       return res.send(err);
     }
 
     if (user == null) {
+      logger.log('verbose', 'Unable to find user for id: ' + req.params.id);
       return res.status(404).send({});
     }
 
@@ -101,6 +108,7 @@ router.put('/users/:id', auth.validateRole('user', 'update'), function(req, res)
         user[property] = req.body.user[property];
       }
     } else {
+      logger.log('verbose', 'Missing authorization for user change (id): ' + req.decoded._doc._id, user);
       return res.status(403).send({ success: false, message: 'Invalid authorization' });
     }
 
@@ -109,6 +117,7 @@ router.put('/users/:id', auth.validateRole('user', 'update'), function(req, res)
       if (err) {
         // catch 'duplicate' errors, send a Bad Request response code
         // Message is only valid as long as Username is the only unique field
+        logger.error('Unable to save user', user);
         return err.code === 11000? res.status(400).send({ success: false, message: 'Username is already taken' }) : res.send(err)
       }
 
@@ -124,6 +133,7 @@ router.get('/users/me', function(req, res) {
 
   User.findOne({ _id: userId }, function(err, user) {
     if (err) {
+      logger.log('verbose', 'GET Unknown user for id: ' + req.decoded._doc._id);
       return res.send(err);
     }
 
@@ -134,6 +144,7 @@ router.get('/users/me', function(req, res) {
 router.get('/users/:id', auth.validateRole('user', 'read'), function(req, res) {
   User.findOne({ _id: req.params.id }, function(err, user) {
     if (err) {
+      logger.log('verbose', 'GET Unknown user for id: ' + req.decoded._doc._id);
       return res.send(err);
     }
 
@@ -144,11 +155,13 @@ router.get('/users/:id', auth.validateRole('user', 'read'), function(req, res) {
 router.delete('/users/:id', auth.validateRole('user', 'delete'), function(req, res) {
   User.findOne({ _id: req.params.id }, function(err, user) {
     if (err) {
+      logger.log('verbose', 'DELETE Unknown user for id: ' + req.params.id);
       return res.send(err);
     }
 
     user.remove(function(err) {
       if (err) {
+        logger.error('Unable to remove user', user);
         return res.send(err);
       }
 
@@ -160,22 +173,26 @@ router.delete('/users/:id', auth.validateRole('user', 'delete'), function(req, r
 router.route('/authenticate').post(function(req, res) {
   // get the user by the name
   if (!req.body.username || !req.body.password) {
+    logger.log('verbose', 'Missing credentials', req.body);
     return res.status(401).send({ success: false, message: 'Invalid credentials' });
   }
 
   User.findOne({ username: req.body.username }, function(err, user) {
     // handle errors and missing user
     if (err) {
+      logger.log('verbose', 'Unknown user for username: ' + req.body.username);
       return res.send(err);
     }
 
     if (!user) {
+      logger.log('verbose', 'Unknown user for username: ' + req.body.username);
       return res.status(401).send({ success: false, message: 'Invalid credentials' });
     }
 
     // validate password
     user.verifyPassword(req.body.password, function(err, isMatch) {
       if (err || !isMatch) {
+        logger.log('verbose', 'Invalid credentials', req.body);
         return res.status(401).send({ success: false, message: 'Invalid credentials' });
       }
 

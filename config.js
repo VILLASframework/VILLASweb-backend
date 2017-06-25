@@ -26,7 +26,7 @@ module.exports = {
     databaseURL: 'mongodb://localhost:27017/',
     port: 4000,
     secret: 'longsecretislong',
-    logLevel: 'info',
+    logLevel: 'verbose',
     logFile: 'log.txt',
     admin: {
       username: 'admin',

@@ -23,6 +23,7 @@
 var express = require('express');
 
 //var auth = require('../auth');
+var logger = require('../utils/logger');
 
 // models
 var SimulationModel = require('../models/simulationModel');
@@ -39,6 +40,7 @@ router.get('/simulationModels', /*auth.validateRole('simulationModel', 'read'),*
   // get all user simulations
   SimulationModel.find(function(err, models) {
     if (err) {
+      logger.error('Unable to receive simulation models', err);
       return res.status(400).send(err);
     }
 
@@ -52,12 +54,14 @@ router.post('/simulationModels', /*auth.validateRole('simulationModel', 'create'
 
   model.save(function(err) {
     if (err) {
+      logger.error('Unable to create simulation model', err);
       return res.status(400).send(err);
     }
 
     // add model to simulation
     Simulation.findOne({ _id: model.simulation }, function(err, simulation) {
       if (err) {
+        logger.verbose('Unable to find simulation for id: ' + model.simulation);
         return res.status(500).send(err);
       }
 
@@ -65,6 +69,7 @@ router.post('/simulationModels', /*auth.validateRole('simulationModel', 'create'
 
       simulation.save(function(err) {
         if (err) {
+          logger.error('Unable to save simulation', simulation);
           return res.status(500).send(err);
         }
 
@@ -78,6 +83,7 @@ router.put('/simulationModels/:id', /*auth.validateRole('simulationModel', 'upda
   // get model
   SimulationModel.findOne({ _id: req.params.id }, function(err, model) {
     if (err) {
+      logger.log('verbose', 'PUT Unknown simulation model for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
@@ -89,6 +95,7 @@ router.put('/simulationModels/:id', /*auth.validateRole('simulationModel', 'upda
     // save the changes
     model.save(function(err) {
       if (err) {
+        logger.error('Unable to save simulation model', model);
         return res.status(500).send(err);
       }
 
@@ -100,6 +107,7 @@ router.put('/simulationModels/:id', /*auth.validateRole('simulationModel', 'upda
 router.get('/simulationModels/:id', /*auth.validateRole('simulationModel', 'read'),*/ function(req, res) {
   SimulationModel.findOne({ _id: req.params.id }, function(err, model) {
     if (err) {
+      logger.log('verbose', 'GET Unknown project for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
@@ -110,12 +118,14 @@ router.get('/simulationModels/:id', /*auth.validateRole('simulationModel', 'read
 router.delete('/simulationModels/:id', /*auth.validateRole('simulationModel', 'delete'),*/ function(req, res) {
   SimulationModel.findOne({ _id: req.params.id }, function(err, model) {
     if (err) {
+      logger.log('verbose', 'DELETE Unknown simulation model for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
     // remove from simulation's list
     Simulation.findOne({ _id: model.simulation }, function(err, simulation) {
       if (err) {
+        logger.log('verbose', 'Unable to find simulation for id: ' + model.simulation);
         return res.status(500).send(err);
       }
 
@@ -128,11 +138,13 @@ router.delete('/simulationModels/:id', /*auth.validateRole('simulationModel', 'd
 
       simulation.save(function(err) {
         if (err) {
+          logger.error('Unable to save simulation', simulation);
           return res.status(500).send(err);
         }
 
         model.remove(function(err) {
           if (err) {
+            logger.error('Unable to remove simulation model', model);
             return res.status(500).send(err);
           }
 

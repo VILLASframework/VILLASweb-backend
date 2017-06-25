@@ -23,6 +23,7 @@
 var express = require('express');
 
 //var auth = require('../auth');
+var logger = require('../utils/logger');
 
 // models
 var Project = require('../models/project');
@@ -40,6 +41,7 @@ router.get('/projects', /*auth.validateRole('project', 'read'),*/ function(req, 
   // get all projects
   Project.find(function(err, projects) {
     if (err) {
+      logger.error('Unable to receive projects', err);
       return res.status(400).send(err);
     }
 
@@ -54,6 +56,7 @@ router.post('/projects', /*auth.validateRole('project', 'create'),*/ function(re
   // save project
   project.save(function(err) {
     if (err) {
+      logger.error('Unable to create project', err);
       return res.status(500).send(err);
     }
 
@@ -73,6 +76,7 @@ router.post('/projects', /*auth.validateRole('project', 'create'),*/ function(re
         // add project to simulation
         Simulation.findOne({ _id: project.simulation }, function(err, simulation) {
           if (err) {
+            logger.log('verbose', 'Unknown simulation for id: ' + project.simulation, { err, project });
             return res.status(400).send(err);
           }
 
@@ -80,6 +84,7 @@ router.post('/projects', /*auth.validateRole('project', 'create'),*/ function(re
 
           simulation.save(function(err) {
             if (err) {
+              logger.error('Unable to save simulation', { err, simulation });
               return res.status(500).send(err);
             }
 
@@ -95,6 +100,7 @@ router.put('/projects/:id', /*auth.validateRole('project', 'update'),*/ function
   // get project
   Project.findOne({ _id: req.params.id }, function(err, project) {
     if (err) {
+      logger.log('verbose', 'PUT Unknown project for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
@@ -140,7 +146,8 @@ router.put('/projects/:id', /*auth.validateRole('project', 'update'),*/ function
       // remove from old simulation
       Simulation.findOne({ _id: project.simulation }, function(err, simulation) {
         if (err) {
-          return console.log(err);
+          logger.verbose('Unable to find simulation for id: ' + project.simulation);
+          return;
         }
 
         for (var i = 0; i < simulation.projects; i++) {
@@ -151,7 +158,8 @@ router.put('/projects/:id', /*auth.validateRole('project', 'update'),*/ function
 
         simulation.save(function(err) {
           if (err) {
-            return console.log(err);
+            logger.error('Unable to save simulation', simulation);
+            return;
           }
         });
       });
@@ -159,14 +167,16 @@ router.put('/projects/:id', /*auth.validateRole('project', 'update'),*/ function
       // add to new simulation
       Simulation.findOne({ _id: req.body.project.simulation }, function(err, simulation) {
         if (err) {
-          return console.log(err);
+          logger.error('Unable to find simulation for id: ' + req.body.project.simulation);
+          return;
         }
 
         simulation.projects.push(project._id);
 
         simulation.save(function(err) {
           if (err) {
-            return console.log(err);
+            logger.error('Unable to save simulation', simulation);
+            return;
           }
         });
       });
@@ -180,6 +190,7 @@ router.put('/projects/:id', /*auth.validateRole('project', 'update'),*/ function
     // save the changes
     project.save(function(err) {
       if (err) {
+        logger.error('Unable to save project', project);
         return res.status(500).send(err);
       }
 
@@ -191,6 +202,7 @@ router.put('/projects/:id', /*auth.validateRole('project', 'update'),*/ function
 router.get('/projects/:id', /*auth.validateRole('project', 'read'),*/ function(req, res) {
   Project.findOne({ _id: req.params.id }, function(err, project) {
     if (err) {
+      logger.log('verbose', 'GET Unknown project for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
@@ -201,6 +213,7 @@ router.get('/projects/:id', /*auth.validateRole('project', 'read'),*/ function(r
 router.delete('/projects/:id', /*auth.validateRole('project', 'delete'),*/ function(req, res) {
   Project.findOne({ _id: req.params.id }, function(err, project) {
     if (err) {
+      logger.log('verbose', 'DELETE Unknown project for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
@@ -225,6 +238,7 @@ router.delete('/projects/:id', /*auth.validateRole('project', 'delete'),*/ funct
         // remove the project
         project.remove(function(err) {
           if (err) {
+            logger.error('Unable to remove project', project);
             return res.status(500).send(err);
           }
 
