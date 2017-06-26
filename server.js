@@ -51,18 +51,21 @@ var config = require('./config')[app.get('env')];
 if (config.logLevel) {
   logger.transports.console.level = config.logLevel;
 
-  // enable debug output for verbose
-  if (config.logLevel == 'verbose') {
+  // enable debug output for mongoose
+  if (config.logLevel == 'debug' || config.logLevel == 'silly') {
     mongoose.set('debug', function(coll, method, query, doc) {
-      logger.log('verbose', '[Mongoose]', { coll, method, query, doc });
+      logger.log('debug', '[Mongoose]', { coll, method, query, doc });
     });
   }
 }
 
 if (config.logFile) {
   logger.transports.file.filename = config.logFile;
+  logger.transports.file.level = config.logLevel;
   logger.transports.file.silent = false;
 }
+
+logger.info('--- Started VILLASweb backend ---');
 
 // configure app
 app.use(expressWinston.logger({ winstonInstance: logger }));
@@ -111,7 +114,7 @@ app.use(function(err, req, res, next) {
 
 // start the app
 app.listen(config.port, function() {
-  logger.info('Express server listening on port ' + config.port);
+  logger.info('Server listening on port ' + config.port);
 });
 
 // add admin account

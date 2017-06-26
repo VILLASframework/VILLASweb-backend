@@ -26,7 +26,7 @@ module.exports = {
     databaseURL: 'mongodb://localhost:27017/',
     port: 4000,
     secret: 'longsecretislong',
-    logLevel: 'verbose',
+    logLevel: 'verbose',        // possible values: error, warn, info, verbose or debug
     logFile: 'log.txt',
     admin: {
       username: 'admin',
@@ -38,7 +38,7 @@ module.exports = {
     databaseURL: 'mongodb://database:27017/',
     port: 4000,
     secret: 'longsecretislong',
-    logLevel: 'warn',
+    logLevel: 'warn',         // possible values: error, warn, info, verbose or debug
     logFile: 'villasweb-backend_log.txt',
     admin: {
       username: 'admin',
