@@ -74,7 +74,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 // connect to database
-mongoose.connect(config.databaseURL + config.databaseName);
+mongoose.Promise = global.Promise;
+mongoose.connect(config.databaseURL + config.databaseName).then(() => {
+  logger.info('Connected to database ' + config.databaseURL + config.databaseName);
+}, (err) => {
+  logger.error('Unable to connect to database \'' + config.databaseURL + config.databaseName + '\'');
+
+  process.exit();
+});
 
 // register routes
 app.use('/api/v1', users);
