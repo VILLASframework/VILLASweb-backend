@@ -23,6 +23,7 @@
 var express = require('express');
 
 //var auth = require('../auth');
+var logger = require('../utils/logger');
 
 // models
 var Simulation = require('../models/simulation');
@@ -38,6 +39,7 @@ var router = express.Router();
 router.get('/simulations', /*auth.validateRole('simulation', 'read'),*/ function(req, res) {
   Simulation.find(function(err, simulations) {
     if (err) {
+      logger.error('Unable to receive simulations', err);
       return res.send(err);
     }
 
@@ -51,6 +53,7 @@ router.post('/simulations', /*auth.validateRole('simulation', 'create'), auth.va
 
   simulation.save(function(err) {
     if (err) {
+      logger.error('Unable to create simulation', err);
       return res.status(400).send(err);
     }
 
@@ -78,6 +81,7 @@ router.put('/simulations/:id', /*auth.validateRole('simulation', 'update'),*/ fu
   // get simulation
   Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
+      logger.log('verbose', 'PUT Unknown simulation for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
@@ -131,6 +135,7 @@ router.put('/simulations/:id', /*auth.validateRole('simulation', 'update'),*/ fu
     // save the changes
     simulation.save(function(err) {
       if (err) {
+        logger.error('Unable to save simulation', simulation);
         return res.status(400).send(err);
       }
 
@@ -142,6 +147,7 @@ router.put('/simulations/:id', /*auth.validateRole('simulation', 'update'),*/ fu
 router.get('/simulations/:id', /*auth.validateRole('simulation', 'read'),*/ function(req, res) {
   Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
+      logger.log('verbose', 'GET Unknown simulation for id: ' + req.params.id);
       return res.send(err);
     }
 
@@ -157,6 +163,7 @@ router.get('/simulations/:id', /*auth.validateRole('simulation', 'read'),*/ func
 router.delete('/simulations/:id', /*auth.validateRole('simulation', 'delete'),*/ function(req, res) {
   Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
+      logger.log('verbose', 'DELETE Unknown simulation for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
@@ -186,6 +193,7 @@ router.delete('/simulations/:id', /*auth.validateRole('simulation', 'delete'),*/
         // remove simulation itself
         simulation.remove(function(err) {
           if (err) {
+            logger.error('Unable to remove simulation', simulation);
             return res.status(500).send(err);
           }
 

@@ -23,6 +23,7 @@
 var express = require('express');
 
 //var auth = require('../auth');
+var logger = require('../utils/logger');
 
 // models
 var Simulator = require('../models/simulator');
@@ -38,6 +39,7 @@ router.get('/simulators', /*auth.validateRole('simulator', 'read'),*/ function(r
   // get all simulators
   Simulator.find(function(err, simulators) {
     if (err) {
+      logger.error('Unable to receive simulators', err);
       return res.status(400).send(err);
     }
 
@@ -51,6 +53,7 @@ router.post('/simulators', /*auth.validateRole('simulator', 'create'),*/ functio
 
   simulator.save(function(err) {
     if (err) {
+      logger.error('Unable to create simulator', err);
       return res.status(400).send(err);
     }
 
@@ -62,6 +65,7 @@ router.put('/simulators/:id', /*auth.validateRole('simulator', 'update'),*/ func
   // get simulator
   Simulator.findOne({ _id: req.params.id }, function(err, simulator) {
     if (err) {
+      logger.log('verbose', 'PUT Unknown simulator for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
@@ -73,6 +77,7 @@ router.put('/simulators/:id', /*auth.validateRole('simulator', 'update'),*/ func
     // save the changes
     simulator.save(function(err) {
       if (err) {
+        logger.error('Unable to save simulator', simulator);
         return res.status(500).send(err);
       }
 
@@ -84,6 +89,7 @@ router.put('/simulators/:id', /*auth.validateRole('simulator', 'update'),*/ func
 router.get('/simulators/:id', /*auth.validateRole('simulator', 'read'),*/ function(req, res) {
   Simulator.findOne({ _id: req.params.id }, function(err, simulator) {
     if (err) {
+      logger.log('verbose', 'GET Unknown simulator for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
@@ -94,11 +100,13 @@ router.get('/simulators/:id', /*auth.validateRole('simulator', 'read'),*/ functi
 router.delete('/simulators/:id', /*auth.validateRole('simulator', 'delete'),*/ function(req, res) {
   Simulator.findOne({ _id: req.params.id }, function(err, simulator) {
     if (err) {
+      logger.log('verbose', 'DELETE Unknown simulator for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
     simulator.remove(function(err) {
       if (err) {
+        logger.error('Unable to remove simulator', simulator);
         return res.status(500).send(err);
       }
 

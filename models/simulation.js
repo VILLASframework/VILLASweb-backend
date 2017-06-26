@@ -24,6 +24,7 @@
 
  var SimulationModel = require('./simulationModel');
  var Project = require('./project');
+ var logger = require('../utils/logger');
 
  var Schema = mongoose.Schema;
 
@@ -42,12 +43,14 @@
    this.models.forEach(function(id) {
      SimulationModel.findOne({ _id: id }, function(err, model) {
        if (err) {
-         return console.log(err);
+         logger.error('Unable to find simulation model for id: ' + id, err);
+         return;
        }
 
        model.remove(function(err) {
          if (err) {
-           return console.log(err);
+           logger.error('Unable to remove simulation model', { err, model });
+           return;
          }
        });
      });
@@ -57,12 +60,14 @@
    this.projects.forEach(function(id) {
      Project.findOne({ _id: id }, function(err, project) {
        if (err) {
-         return console.log(err);
+         logger.error('Unable to find project for id: ' + id, err);
+         return;
        }
 
        project.remove(function(err) {
          if (err) {
-           return console.log(err);
+           logger.error('Unable to remove project', { err, project });
+           return;
          }
        });
      });

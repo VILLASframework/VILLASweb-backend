@@ -23,6 +23,7 @@
 var express = require('express');
 
 var auth = require('../auth');
+var logger = require('../utils/logger');
 
 // models
 var File = require('../models/file');
@@ -36,29 +37,27 @@ var router = express.Router();
 
 // routes
 router.get('/files', auth.validateToken, function(req, res) {
-  
   // find request author
   User.findOne({ _id: req.decoded._doc._id }, function(err, user) {
     if (err) {
-      console.error('Could find user requesting files', err);
+      logger.error('Could find user requesting files', err);
     }
-    
+
     File.find({ _id: { $in : user.files } }, function(err, files) {
       if (err) {
-        console.error('Error while querying files from user', error, user);
+        logger.error('Error while querying files from user', { err, user });
         return res.status(500).send({ success: false, message: 'Could not retrieve user\'s files.' });
       }
 
       res.send({ files: files });
     });
-
   });
-
 });
 
 router.get('/files/:id', function(req, res) {
   File.findOne({ _id: req.params.id }, function(err, file) {
     if (err) {
+      logger.log('verbose', 'GET Unknown file for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
@@ -69,11 +68,13 @@ router.get('/files/:id', function(req, res) {
 router.delete('/files/:id', function(req, res) {
   File.findOne({ _id: req.params.id }, function(err, file) {
     if (err) {
+      logger.log('verbose', 'DELETE Unknown file for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
     file.remove(function(err) {
       if (err) {
+        logger.error('Unable to remove file', file);
         return res.status(500).send(err);
       }
 

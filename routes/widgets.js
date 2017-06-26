@@ -23,6 +23,7 @@
 var express = require('express');
 
 //var auth = require('../auth');
+var logger = require('../utils/logger');
 
 // models
 var Widget = require('../models/widget');
@@ -39,6 +40,7 @@ router.get('/widgets', /*auth.validateRole('visualization', 'read'),*/ function(
   // get all widgets
   Widget.find(function(err, widgets) {
     if (err) {
+      logger.error('Unable to receive widgets', err);
       return res.send(err);
     }
 
@@ -52,6 +54,7 @@ router.post('/widgets', /*auth.validateRole('visualization', 'create'),*/ functi
 
   widget.save(function(err) {
     if (err) {
+      logger.error('Unable to create widget', err);
       return res.send(err);
     }
 
@@ -61,14 +64,16 @@ router.post('/widgets', /*auth.validateRole('visualization', 'create'),*/ functi
   // add widget to visualization
   Visualization.findOne({ _id: widget.visualization }, function(err, visualization) {
     if (err) {
-      return console.log(err);
+      logger.log('verbose', 'Unknown visualization for id: ' + widget.visualization);
+      return;
     }
 
     visualization.widgets.push(widget._id);
 
     visualization.save(function(err) {
       if (err) {
-        return console.log(err);
+        logger.error('Unable to save visualization', visualization);
+        return;
       }
     });
   });
@@ -78,6 +83,7 @@ router.put('/widgets/:id', /*auth.validateRole('visualization', 'update'),*/ fun
   // get widget
   Widget.findOne({ _id: req.params.id }, function(err, widget) {
     if (err) {
+      logger.log('verbose', 'PUT Unknown widget for id: ' + req.params.id);
       return res.send(err);
     }
 
@@ -89,6 +95,7 @@ router.put('/widgets/:id', /*auth.validateRole('visualization', 'update'),*/ fun
     // save the changes
     widget.save(function(err) {
       if (err) {
+        logger.error('Unable to save widget', widget);
         return res.send(err);
       }
 
@@ -100,6 +107,7 @@ router.put('/widgets/:id', /*auth.validateRole('visualization', 'update'),*/ fun
 router.get('/widgets/:id', /*auth.validateRole('visualization', 'read'),*/ function(req, res) {
   Widget.findOne({ _id: req.params.id }, function(err, widget) {
     if (err) {
+      logger.log('verbose', 'GET Unknown widget for id: ' + req.params.id);
       return res.send(err);
     }
 
@@ -110,13 +118,15 @@ router.get('/widgets/:id', /*auth.validateRole('visualization', 'read'),*/ funct
 router.delete('/widgets/:id', /*auth.validateRole('visualization', 'delete'),*/ function(req, res) {
   Widget.findOne({ _id: req.params.id }, function(err, widget) {
     if (err) {
+      logger.log('verbose', 'DELETE Unknown widget for id: ' + req.params.id);
       return res.send(err);
     }
 
     // remove from visualization's list
     Visualization.findOne({ _id: widget.visualization }, function(err, visualization) {
       if (err) {
-        return console.log(err);
+        logger.log('verbose', 'Unknown visualization for id: ' + widget.visualization);
+        return;
       }
 
       for (var i = 0; i < visualization.widgets.length; i++) {
@@ -128,13 +138,15 @@ router.delete('/widgets/:id', /*auth.validateRole('visualization', 'delete'),*/ 
 
       visualization.save(function(err) {
         if (err) {
-          return console.log(err);
+          logger.error('Unable to save visualization', visualization);
+          return;
         }
       });
     });
 
     widget.remove(function(err) {
       if (err) {
+        logger.error('Unable to remove widget', widget);
         return res.send(err);
       }
 

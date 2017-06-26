@@ -28,6 +28,7 @@ var fs = require('fs');
 // load configuration
 var config = require('../config');
 var auth = require('../auth');
+var logger = require('../utils/logger');
 
 var User = require('../models/user');
 var File = require('../models/file');
@@ -44,11 +45,11 @@ router.use(express.static(publicDir));
 
 // routes
 router.post('/upload', auth.validateRole('visualization', 'update'), function(req, res) {
-  
+
   // find upload author
   User.findOne({ _id: req.decoded._doc._id }, function(err, user) {
     if (err) {
-      console.error('Could find author while uploading', err);
+      logger.log('verbose', 'GET Unable to find user for id: ' + req.decoded._doc._id);
       res.status(500).send({ success: false, message: 'File could not be uploaded.' });
     }
 
@@ -58,7 +59,7 @@ router.post('/upload', auth.validateRole('visualization', 'update'), function(re
     form.uploadDir = userFolder;
 
     form.on('error', function(error) {
-      console.error('Error while processing incoming form',error);
+      logger.error('Unable to process incoming form', error);
       res.status(400).send({ success: false, message: 'File could not be uploaded.' });
     });
 
@@ -69,7 +70,7 @@ router.post('/upload', auth.validateRole('visualization', 'update'), function(re
       var fileObj = new File({ name: file.name, path: filePath });
       fileObj.save(function(err) {
         if (err) {
-          console.error('Error while storing reference to uploaded file', err);
+          logger.error('Unable to save reference file', err);
           res.status(500).send({ success: false, message: 'File could not be uploaded.' });
         }
 
@@ -77,7 +78,7 @@ router.post('/upload', auth.validateRole('visualization', 'update'), function(re
 
         user.save(function(err) {
           if (err) {
-            console.error('Error while updating user\'s files references', err);
+            logger.error('Unable to save user', user);
             res.status(500).send({ success: false, message: 'File could not be uploaded.' });
           }
         });
@@ -90,12 +91,13 @@ router.post('/upload', auth.validateRole('visualization', 'update'), function(re
 
     // Make sure user's folder exists
     fs.mkdir(userFolder, function(err) {
-      // error occurred (ignore already existing) 
+      // error occurred (ignore already existing)
       if (err && err.code != 'EEXIST') {
+        logger.error('Unable to create directory', err);
         res.status(500).send({ success: false, message: 'File could not be uploaded.'});
         return;
       }
-      
+
       // handle the request
       form.parse(req);
 

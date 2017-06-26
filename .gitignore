@@ -2,6 +2,7 @@
 node_modules/
 npm-debug.log
 public/*
+log*.txt
 
 # OS X
 .DS_Store

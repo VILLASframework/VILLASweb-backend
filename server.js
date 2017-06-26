@@ -23,10 +23,12 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
-var morgan = require('morgan');
 var cors = require('cors');
+var winston = require('winston');
+var expressWinston = require('express-winston');
 
 // local include
+var logger = require('./utils/logger');
 var users = require('./routes/users');
 var projects = require('./routes/projects');
 var visualizations = require('./routes/visualizations');
@@ -45,14 +47,41 @@ var app = express();
 // load configuration
 var config = require('./config')[app.get('env')];
 
+// configure logger
+if (config.logLevel) {
+  logger.transports.console.level = config.logLevel;
+
+  // enable debug output for mongoose
+  if (config.logLevel == 'debug' || config.logLevel == 'silly') {
+    mongoose.set('debug', function(coll, method, query, doc) {
+      logger.log('debug', '[Mongoose]', { coll, method, query, doc });
+    });
+  }
+}
+
+if (config.logFile) {
+  logger.transports.file.filename = config.logFile;
+  logger.transports.file.level = config.logLevel;
+  logger.transports.file.silent = false;
+}
+
+logger.info('--- Started VILLASweb backend ---');
+
 // configure app
+app.use(expressWinston.logger({ winstonInstance: logger }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(morgan('dev'));
 app.use(cors());
 
 // connect to database
-mongoose.connect(config.databaseURL + config.databaseName);
+mongoose.Promise = global.Promise;
+mongoose.connect(config.databaseURL + config.databaseName).then(() => {
+  logger.info('Connected to database ' + config.databaseURL + config.databaseName);
+}, (err) => {
+  logger.error('Unable to connect to database \'' + config.databaseURL + config.databaseName + '\'');
+
+  process.exit();
+});
 
 // register routes
 app.use('/api/v1', users);
@@ -75,7 +104,7 @@ app.use(function(req, res, next) {
 });
 
 // development error handler
-console.log("Environment: " + app.get('env'));
+logger.info("Environment: " + app.get('env'));
 
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
@@ -92,7 +121,7 @@ app.use(function(err, req, res, next) {
 
 // start the app
 app.listen(config.port, function() {
-  console.log('Express server listening on port ' + config.port);
+  logger.info('Server listening on port ' + config.port);
 });
 
 // add admin account
@@ -100,7 +129,7 @@ if (config.admin) {
   // check if admin account exists
   User.findOne({ username: config.admin.username }, function(err, user) {
     if (err) {
-      console.log(err);
+      logger.error(err);
       return;
     }
 
@@ -109,11 +138,11 @@ if (config.admin) {
       var newUser = User({ username: config.admin.username, password: config.admin.password, role: 'admin' });
       newUser.save(function(err) {
         if (err) {
-          console.log(err);
+          logger.error(err);
           return;
         }
 
-        console.log('Created default admin user from config file');
+        logger.warn('Created default admin user from config file');
       });
     }
   });
