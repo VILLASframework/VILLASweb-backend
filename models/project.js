@@ -23,6 +23,7 @@
 var mongoose = require('mongoose');
 
 var Visualization = require('./visualization');
+var logger = require('../utils/logger');
 
 var Schema = mongoose.Schema;
 
@@ -39,12 +40,14 @@ projectSchema.pre('remove', function(callback) {
   this.visualizations.forEach(function(id) {
     Visualization.findOne({ _id: id }, function(err, visualization) {
       if (err) {
-        return console.log(err);
+        logger.error('Unable to find visualization for id: ' + id, err);
+        return;
       }
 
       visualization.remove(function(err) {
         if (err) {
-          return console.log(err);
+          logger.error('Unable to remove visualization', { err, visualization });
+          return;
         }
       });
     });

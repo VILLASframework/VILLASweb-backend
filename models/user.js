@@ -85,12 +85,14 @@ userSchema.pre('remove', function(callback) {
   this.projects.forEach(function(id) {
     Project.findOne({ _id: id }, function(err, project) {
       if (err) {
-        return console.log(err);
+        logger.error('Unable to find project for id: ' + id, err);
+        return;
       }
 
       project.remove(function(err) {
         if (err) {
-          return console.log(err);
+          logger.error('Unable to remove project', { err, project });
+          return;
         }
       });
     });
@@ -100,12 +102,14 @@ userSchema.pre('remove', function(callback) {
   this.simulations.forEach(function(id) {
     Simulation.findOne({ _id: id }, function(err, simulation) {
       if (err) {
-        return console.log(err);
+        logger.error('Unable to find simulation for id: ' + id, err);
+        return;
       }
 
       simulation.remove(function(err) {
         if (err) {
-          return console.log(err);
+          logger.error('Unable to remove simulation', { err, simulation });
+          return;
         }
       });
     });
