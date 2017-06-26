@@ -50,6 +50,13 @@ var config = require('./config')[app.get('env')];
 // configure logger
 if (config.logLevel) {
   logger.transports.console.level = config.logLevel;
+
+  // enable debug output for verbose
+  if (config.logLevel == 'verbose') {
+    mongoose.set('debug', function(coll, method, query, doc) {
+      logger.log('verbose', '[Mongoose]', { coll, method, query, doc });
+    });
+  }
 }
 
 if (config.logFile) {
