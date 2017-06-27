@@ -147,3 +147,6 @@ if (config.admin) {
     }
   });
 }
+
+// export app for testing
+module.exports = app;

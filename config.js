@@ -44,5 +44,11 @@ module.exports = {
       username: 'admin',
       password: 'admin'
     }
+  },
+  test: {
+    databaseName: 'VILLAS-test',
+    databaseURL: 'mongodb://localhost:27017/',
+    logLevel: 'warn',
+    port: 4000
   }
 };
