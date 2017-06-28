@@ -1,0 +1,17 @@
+image: node:7-slim
+
+services:
+  - mongo
+
+before_script:
+  - npm install
+
+stages:
+  - test
+
+test_job:
+  stage: test
+  script:
+    - npm test
+  tags:
+    - docker
