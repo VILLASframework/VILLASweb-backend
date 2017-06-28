@@ -31,9 +31,10 @@ var Simulator = require('../../../models/simulator');
 
 // prepare dependencies
 var should = chai.should();
-const NAMESPACE = '/api/v1';
 
 chai.use(chaiHttp);
+
+const NAMESPACE = '/api/v1';
 
 // test block
 describe('Simulators GET', () => {
@@ -52,9 +53,7 @@ describe('Simulators GET', () => {
         done();
       });
     });
-  });
 
-  describe('/simulators', () => {
     it('it should GET one simulator', (done) => {
       var simulator = new Simulator({ name: 'Test Simulator', endpoint: 'localhost:5000' });
       simulator.save((err, simulator) => {
@@ -62,13 +61,15 @@ describe('Simulators GET', () => {
           res.should.have.status(200);
           res.body.simulators.should.be.a('array');
           res.body.simulators.length.should.be.eql(1);
+          res.body.simulators[0].should.have.property('name', 'Test Simulator');
+          res.body.simulators[0].should.have.property('endpoint', 'localhost:5000');
+          res.body.simulators[0].should.have.property('running', false);
+          res.body.simulators[0].should.have.property('_id');
           done();
         });
       });
     });
-  });
 
-  describe('/simulators', () => {
     it('it should GET two simulators', (done) => {
       var simulator = new Simulator({ name: 'Test Simulator One', endpoint: 'localhost:5000' });
       simulator.save((err, simulator) => {
@@ -78,8 +79,41 @@ describe('Simulators GET', () => {
             res.should.have.status(200);
             res.body.simulators.should.be.a('array');
             res.body.simulators.length.should.be.eql(2);
+            res.body.simulators[0].should.have.property('name', 'Test Simulator One');
+            res.body.simulators[0].should.have.property('endpoint', 'localhost:5000');
+            res.body.simulators[0].should.have.property('running', false);
+            res.body.simulators[0].should.have.property('_id');
+            res.body.simulators[1].should.have.property('name', 'Test Simulator Two');
+            res.body.simulators[1].should.have.property('endpoint', 'localhost:5001');
+            res.body.simulators[1].should.have.property('running', false);
+            res.body.simulators[1].should.have.property('_id');
             done();
           });
+        });
+      });
+    });
+  });
+
+  describe('/simulators/:id', () => {
+    it('it should GET no simulator', (done) => {
+      chai.request(server).get(NAMESPACE + '/simulators/123').end((err, res) => {
+        res.should.have.status(404);
+        res.body.should.be.eql({});
+        done();
+      });
+    });
+
+    it('it should GET one simulator', (done) => {
+      var simulator = new Simulator({ name: 'Test Simulator', endpoint: 'localhost:5000' });
+      simulator.save((err, simulator) => {
+        chai.request(server).get(NAMESPACE + '/simulators/' + simulator._id).end((err, res) => {
+          res.should.have.status(200);
+          res.body.simulator.should.not.be.null;
+          res.body.simulator.should.have.property('name', 'Test Simulator');
+          res.body.simulator.should.have.property('endpoint', 'localhost:5000');
+          res.body.simulator.should.have.property('running', false);
+          res.body.simulator.should.have.property('_id');
+          done();
         });
       });
     });
