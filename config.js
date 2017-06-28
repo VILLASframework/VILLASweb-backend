@@ -48,7 +48,7 @@ module.exports = {
   test: {
     databaseName: 'VILLAS-test',
     databaseURL: 'mongodb://localhost:27017/',
-    logLevel: 'silent',
+    logLevel: 'info',
     port: 4000
   }
 };
