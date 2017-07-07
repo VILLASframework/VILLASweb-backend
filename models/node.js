@@ -22,7 +22,6 @@
 // include
 var mongoose = require('mongoose');
 
-var Simulator = require('./simulator');
 var logger = require('../utils/logger');
 
 var Schema = mongoose.Schema;
@@ -32,28 +31,7 @@ var nodeSchema = new Schema({
   name: { type: String, required: true, unique: true },
   endpoint: { type: String, required: true, unique: true },
   config: { type: Schema.Types.Mixed, default: {} },
-  simulators: [{ type: Schema.Types.ObjectId, ref: 'Simulator', default: [] }]
-});
-
-nodeSchema.pre('remove', function(callback) {
-  // delete all simulators belonging to this node
-  this.simulators.forEach(function(id) {
-    Simulator.findOne({ _id: id }, function(err, simulator) {
-      if (err) {
-        logger.error('Unable to find simulator for id: ' + id, err);
-        return;
-      }
-
-      simulator.remove(function(err) {
-        if (err) {
-          logger.error('Unable to remove simulator', { err, simulator });
-          return;
-        }
-      });
-    });
-  });
-
-  callback();
+  simulators: [{ type: Schema.Types.Mixed, default: [] }]
 });
 
 module.exports = mongoose.model('Node', nodeSchema);
