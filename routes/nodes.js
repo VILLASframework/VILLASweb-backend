@@ -45,7 +45,7 @@ router.get('/nodes', function(req, res) {
 
 router.post('/nodes', function(req, res) {
   // create new node
-  var node = new Simulator(req.body.node);
+  var node = new Node(req.body.node);
 
   node.save(function(err) {
     if (err) {
