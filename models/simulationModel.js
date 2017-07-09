@@ -27,7 +27,7 @@ var Schema = mongoose.Schema;
 // simulation model model
 var simulationModelSchema = new Schema({
   name: { type: String, required: true },
-  simulator: { type: Schema.Types.ObjectId, ref: 'Simulator', required: true },
+  simulator: { type: Schema.Types.Mixed, required: true },
   length: { type: Number, default: 1 },
   mapping: [{ type: String, default: [] }],
   simulation: { type: Schema.Types.ObjectId, ref: 'Simulation', required: true }
