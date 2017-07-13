@@ -35,27 +35,27 @@ var nodeSchema = new Schema({
   simulators: [{ type: Schema.Types.Mixed, default: [] }]
 });
 
-nodeSchema.pre('save', function(next) {
-  // delete old configuration file
+nodeSchema.post('save', function() {
+  // remove old file
   if (this._name != null) {
-    fs.stat('nodes/' + this._name + '.conf', function(err) {
+    var oldFile = 'nodes/' + this._name + '.conf';
+
+    fs.stat(oldFile, function(err, stat) {
       if (err) {
         logger.info('Old node configuration missing', err);
         return;
       }
 
-      fs.unlink('nodes/' + this._name + '.conf', function(err) {
-        if (err) {
-          logger.warn('Unable to delete old node configuration', err);
-        }
-      });
+      if (stat.isFile()) {
+        fs.unlink(oldFile, function(err) {
+          if (err) {
+            logger.warn('Unable to delete old node configuration', err);
+          }
+        });
+      }
     });
   }
 
-  next();
-});
-
-nodeSchema.post('save', function() {
   // create configuration file
   var port = 12000;
 
