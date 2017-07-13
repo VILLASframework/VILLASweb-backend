@@ -10,6 +10,7 @@ RUN npm install
 
 # Create public directory
 RUN mkdir -p /usr/src/app/public
+RUN mkdir -p /usr/src/app/nodes
 
 # Bundle app source
 COPY . /usr/src/app

@@ -97,6 +97,7 @@ app.use('/api/v1', files);
 app.use('/api/v1', nodes);
 
 app.use('/public', express.static(__dirname + '/public'));
+app.use('/nodes', express.static(__dirname + '/nodes'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

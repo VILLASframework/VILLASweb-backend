@@ -21,6 +21,7 @@
 
 // include
 var mongoose = require('mongoose');
+var fs = require('fs');
 
 var logger = require('../utils/logger');
 
@@ -28,10 +29,55 @@ var Schema = mongoose.Schema;
 
 // node model
 var nodeSchema = new Schema({
-  name: { type: String, required: true, unique: true },
+  name: { type: String, required: true, unique: true, set: function(name) { this._name = this.name; return name; } },
   endpoint: { type: String, required: true, unique: true },
   config: { type: Schema.Types.Mixed, default: {} },
   simulators: [{ type: Schema.Types.Mixed, default: [] }]
+});
+
+nodeSchema.pre('save', function(next) {
+  // delete old configuration file
+  if (this._name != null) {
+    fs.stat('nodes/' + this._name + '.conf', function(err) {
+      if (err) {
+        logger.info('Old node configuration missing', err);
+        return;
+      }
+
+      fs.unlink('nodes/' + this._name + '.conf', function(err) {
+        if (err) {
+          logger.warn('Unable to delete old node configuration', err);
+        }
+      });
+    });
+  }
+
+  next();
+});
+
+nodeSchema.post('save', function() {
+  // create configuration file
+  var port = 12000;
+
+  var nodes = this.simulators.map(simulator => {
+    return "\t" + simulator.name + " = {\n\t\ttype = \"websocket\",\n\t\tvectorize = 1\n\t},\n" +
+      "\t" + simulator.name + "_RECV = {\n\t\ttype = \"socket\",\n\t\tlayer = \"udp\",\n\t\tlocal = \"*:" + (port++) + "\",\n\t\tremote = \"127.0.0.1:" + (port++) + "\"\n\t}";
+  });
+
+  var paths = this.simulators.map(simulator => {
+    return "\t{ in = \"" + simulator.name + "_RECV\", out = \"" + simulator.name + "\" }";
+  });
+
+  var content = "nodes = {\n" + nodes.join(",\n") + "\n};\n\npaths = (\n" + paths.join(",\n") + "\n);\n";
+
+  fs.writeFile('nodes/' + this.name + '.conf', content, function(err) {
+    if (err) {
+      logger.error('Unable to write node configuration', err);
+      return;
+    }
+
+    logger.log('info', 'Node configuration file written');
+  });
 });
 
 module.exports = mongoose.model('Node', nodeSchema);
