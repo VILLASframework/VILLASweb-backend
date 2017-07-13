@@ -27,8 +27,7 @@
  // simulator model
  var simulatorSchema = new Schema({
    name: { type: String, required: true },
-   running: { type: Boolean, default: false },
-   endpoint: { type: String, required: true }
+   config: { type: Schema.Types.Mixed, default: {} }
  });
 
  module.exports = mongoose.model('Simulator', simulatorSchema);
