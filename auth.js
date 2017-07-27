@@ -25,6 +25,8 @@ var jwt = require('jsonwebtoken');
 var config = require('./config')[process.env.NODE_ENV || 'development'];
 var roles = require('./roles');
 
+var User = require('./models/user');
+
 module.exports = {
   validateToken: function(req, res, next) {
     // check for token
@@ -38,9 +40,16 @@ module.exports = {
         return res.status(403).send({ success: false, message: 'Authentication failed' });
       }
 
-      // save to request in other routes
-      req.decoded = decoded;
-      next();
+      // check if decoded user is valid
+      User.findOne({ _id: decoded._id }, function(err, user) {
+        if (err) {
+          return res.status(403).send({ success: false, message: 'Authentication failed' });
+        }
+
+        // save to request in other routes
+        req.decoded = decoded;
+        next();
+      });
     });
   },
 
