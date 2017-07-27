@@ -33,7 +33,7 @@ var User = require('../models/user');
 var router = express.Router();
 
 // all file routes need authentication
-//router.use('/files', auth.validateToken);
+router.use('/files', auth.validateToken);
 
 // routes
 router.get('/files', auth.validateToken, function(req, res) {

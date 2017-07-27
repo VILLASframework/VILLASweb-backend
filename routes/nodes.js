@@ -22,6 +22,7 @@
 // include
 var express = require('express');
 
+var auth = require('../auth');
 var logger = require('../utils/logger');
 
 // models
@@ -29,6 +30,9 @@ var Node = require('../models/node');
 
 // create router
 var router = express.Router();
+
+// all node routes need authentication
+router.use('/nodes', auth.validateToken);
 
 // routes
 router.get('/nodes', function(req, res) {

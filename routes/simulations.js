@@ -22,7 +22,7 @@
 // include
 var express = require('express');
 
-//var auth = require('../auth');
+var auth = require('../auth');
 var logger = require('../utils/logger');
 
 // models
@@ -33,7 +33,7 @@ var User = require('../models/user');
 var router = express.Router();
 
 // all model routes need authentication
-//router.use('/simulations', auth.validateToken);
+router.use('/simulations', auth.validateToken);
 
 // routes
 router.get('/simulations', /*auth.validateRole('simulation', 'read'),*/ function(req, res) {

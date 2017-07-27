@@ -27,7 +27,6 @@ module.exports = {
     port: 4000,
     secret: 'longsecretislong',
     logLevel: 'debug',        // possible values: error, warn, info, verbose or debug
-    logFile: 'log.txt',
     admin: {
       username: 'admin',
       password: 'admin'

@@ -22,7 +22,7 @@
 // include
 var express = require('express');
 
-//var auth = require('../auth');
+var auth = require('../auth');
 var logger = require('../utils/logger');
 
 // models
@@ -33,7 +33,7 @@ var Project = require('../models/project');
 var router = express.Router();
 
 // all visualization routes need authentication
-//router.use('/visualizations', auth.validateToken);
+router.use('/visualizations', auth.validateToken);
 
 // routes
 router.get('/visualizations', /*auth.validateRole('visualization', 'read'),*/ function(req, res) {
