@@ -32,7 +32,6 @@ var logger = require('./utils/logger');
 var users = require('./routes/users');
 var projects = require('./routes/projects');
 var visualizations = require('./routes/visualizations');
-var widgets = require('./routes/widgets');
 var simulations = require('./routes/simulations');
 var upload = require('./routes/upload');
 var files = require('./routes/files');
@@ -86,7 +85,6 @@ mongoose.connect(config.databaseURL + config.databaseName, { useMongoClient: tru
 app.use('/api/v1', users);
 app.use('/api/v1', projects);
 app.use('/api/v1', visualizations);
-app.use('/api/v1', widgets);
 app.use('/api/v1', simulations);
 app.use('/api/v1', upload);
 app.use('/api/v1', files);
