@@ -26,6 +26,7 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 var winston = require('winston');
 var expressWinston = require('express-winston');
+var git = require('git-rev-sync');
 
 // local include
 var logger = require('./utils/logger');
@@ -64,6 +65,7 @@ if (config.logFile) {
 }
 
 logger.info('--- Started VILLASweb backend ---');
+logger.info('Branch: ' + git.branch() + ', Commit: ' + git.short());
 
 // configure app
 app.use(expressWinston.logger({ winstonInstance: logger }));
