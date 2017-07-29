@@ -29,6 +29,8 @@ var fileSchema = new Schema({
   name: { type: String },
   path: { type: String, required: true },
   type: { type: String },
+  size: { type: Number },
+  dimensions: { type: Schema.Types.Mixed },
   /*user: { type: Schema.Types.ObjectId, ref: 'User', required: true },*/
   date: { type: Date, default: Date.now }
 });

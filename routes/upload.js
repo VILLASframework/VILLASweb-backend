@@ -24,6 +24,7 @@ var express = require('express');
 var path = require('path');
 var formidable = require('formidable');
 var fs = require('fs');
+var sizeOf = require('image-size');
 
 // load configuration
 var config = require('../config');
@@ -41,11 +42,10 @@ router.use('/upload', auth.validateToken);
 
 // serve public files
 let publicDir = path.join(__dirname, config.publicDir);
-router.use(express.static(publicDir));
+//router.use(express.static(publicDir));
 
 // routes
 router.post('/upload', auth.validateRole('visualization', 'update'), function(req, res) {
-
   // find upload author
   User.findOne({ _id: req.decoded._doc._id }, function(err, user) {
     if (err) {
@@ -55,7 +55,7 @@ router.post('/upload', auth.validateRole('visualization', 'update'), function(re
 
     // create form object with the upload dir corresponding to user's
     var form = new formidable.IncomingForm();
-    let userFolder = path.join(publicDir,user._id + ''); // ensure is a string
+    var userFolder = path.join(publicDir, user._id + ''); // ensure is a string
     form.uploadDir = userFolder;
 
     form.on('error', function(error) {
@@ -64,10 +64,17 @@ router.post('/upload', auth.validateRole('visualization', 'update'), function(re
     });
 
     form.on('file', function(field, file) {
-
       // create file object, assigning path to userID + formidable's created name
-      let filePath = path.join(user._id + '', path.basename(file.path));
-      var fileObj = new File({ name: file.name, path: filePath });
+      var filePath = path.join(user._id + '', path.basename(file.path));
+      var fileObj = new File({ name: file.name, path: filePath, type: file.type, size: file.size });
+
+      // if file is an image, get the image size
+      if (file.type.split("/")[0] === "image") {
+        var dimensions = sizeOf(file.path);
+        delete dimensions['type'];
+        fileObj.dimensions = dimensions;
+      }
+
       fileObj.save(function(err) {
         if (err) {
           logger.error('Unable to save reference file', err);
@@ -100,7 +107,6 @@ router.post('/upload', auth.validateRole('visualization', 'update'), function(re
 
       // handle the request
       form.parse(req);
-
     });
   });
 });
