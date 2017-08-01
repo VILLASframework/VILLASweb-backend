@@ -31,7 +31,7 @@ var Schema = mongoose.Schema;
 // user model
 var userSchema = new Schema({
   username: { type: String, unique: true, required: true },
-  password: { type: String, required: true },
+  password: { type: String, required: true, select: false },
   role: { type: String, required: true, default: 'user' },
   projects: [{ type: Schema.Types.ObjectId, ref: 'Project', default: [] }],
   mail: { type: String, default: "" },
