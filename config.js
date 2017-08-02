@@ -26,7 +26,7 @@ module.exports = {
     databaseURL: 'mongodb://localhost:27017/',
     port: 4000,
     secret: 'longsecretislong',
-    logLevel: 'debug',        // possible values: error, warn, info, verbose or debug
+    logLevel: 'verbose',        // possible values: error, warn, info, verbose or debug
     admin: {
       username: 'admin',
       password: 'admin'

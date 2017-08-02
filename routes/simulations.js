@@ -47,14 +47,9 @@ router.get('/simulations', /*auth.validateRole('simulation', 'read'),*/ function
   });
 });
 
-router.post('/simulations', /*auth.validateRole('simulation', 'create'), auth.validateOwner('simulation'),*/ function(req, res) {
-  // only add simulations to logged-in user
-  if (req.body.simulation.user !== req.decoded._id) {
-    logger.log('verbose', 'POST Unable to add simulation to different user ' + req.body.simulation.user);
-    return res.status(400).send({});
-  }
-
+router.post('/simulations', /*auth.validateRole('simulation', 'create'),*/ function(req, res) {
   // create new simulation
+  req.body.simulation.user = req.decoded._id;
   const simulation = new Simulation(req.body.simulation);
 
   simulation.save(function(err) {

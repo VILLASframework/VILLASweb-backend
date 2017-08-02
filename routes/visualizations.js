@@ -57,6 +57,7 @@ router.post('/visualizations', /*auth.validateRole('visualization', 'create'),*/
     }
 
     // create new visualization
+    req.body.visualization.user = req.decoded._id;
     const visualization = new Visualization(req.body.visualization);
   
     visualization.save(function(err) {

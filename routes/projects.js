@@ -50,13 +50,8 @@ router.get('/projects', /*auth.validateRole('project', 'read'),*/ function(req, 
 });
 
 router.post('/projects', /*auth.validateRole('project', 'create'),*/ function(req, res) {
-  // only add project to logged-in user
-  if (req.body.project.user !== req.decoded._id) {
-    logger.log('verbose', 'POST Unable to add project to different user ' + req.body.simulation.user);
-    return res.status(400).send({});
-  }
-
   // create new project
+  req.body.project.user = req.decoded._id;
   const project = new Project(req.body.project);
 
   // save project

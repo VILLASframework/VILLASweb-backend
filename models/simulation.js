@@ -22,7 +22,6 @@
 // include
 var mongoose = require('mongoose');
 
-var Project = require('./project');
 var logger = require('../utils/logger');
 
 var Schema = mongoose.Schema;
