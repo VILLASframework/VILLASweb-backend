@@ -68,7 +68,7 @@ logger.info('--- Started VILLASweb backend ---');
 logger.info('Branch: ' + git.branch() + ', Commit: ' + git.short());
 
 // configure app
-app.use(expressWinston.logger({ winstonInstance: logger }));
+app.use(expressWinston.logger({ winstonInstance: logger, meta: false, colorize: true, msg: "HTTP {{req.method}} {{res.statusCode}} {{req.url}} {{res.responseTime}}ms" }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
