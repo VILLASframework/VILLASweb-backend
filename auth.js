@@ -41,13 +41,13 @@ module.exports = {
       }
 
       // check if decoded user is valid
-      User.findOne({ _id: decoded._id }, function(err, user) {
+      User.findOne({ _id: decoded._doc._id }, function(err, user) {
         if (err) {
           return res.status(403).send({ success: false, message: 'Authentication failed' });
         }
 
         // save to request in other routes
-        req.decoded = decoded;
+        req.decoded = user;
         next();
       });
     });

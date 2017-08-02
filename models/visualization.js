@@ -27,7 +27,7 @@ var Schema = mongoose.Schema;
 // visualization model
 var visualizationSchema = new Schema({
   name: { type: String, required: true },
-  project: { type: Schema.Types.ObjectId, ref: 'Project'/*, required: true*/ },
+  project: { type: Schema.Types.ObjectId, ref: 'Project', required: true },
   widgets: { type: Array, default: [] },
   grid: { type: Number, default: 1 }
 });

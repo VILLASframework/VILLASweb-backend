@@ -37,19 +37,25 @@ router.use('/simulations', auth.validateToken);
 
 // routes
 router.get('/simulations', /*auth.validateRole('simulation', 'read'),*/ function(req, res) {
-  Simulation.find(function(err, simulations) {
+  Simulation.find({ user: req.decoded._id }, function(err, simulations) {
     if (err) {
       logger.error('Unable to receive simulations', err);
-      return res.send(err);
+      return res.status(400).send(err);
     }
 
-    res.send({ simulations: simulations });
+    res.send({ simulations });
   });
 });
 
 router.post('/simulations', /*auth.validateRole('simulation', 'create'), auth.validateOwner('simulation'),*/ function(req, res) {
+  // only add simulations to logged-in user
+  if (req.body.simulation.user !== req.decoded._id) {
+    logger.log('verbose', 'POST Unable to add simulation to different user ' + req.body.simulation.user);
+    return res.status(400).send({});
+  }
+
   // create new simulation
-  var simulation = new Simulation(req.body.simulation);
+  const simulation = new Simulation(req.body.simulation);
 
   simulation.save(function(err) {
     if (err) {
@@ -58,8 +64,9 @@ router.post('/simulations', /*auth.validateRole('simulation', 'create'), auth.va
     }
 
     // add simulation to user
-    /*User.findOne({ _id: simulation.owner }, function(err, user) {
+    User.findOne({ _id: simulation.user }, function(err, user) {
       if (err) {
+        logger.error('Unable to find user ' + simulation.user, err);
         return res.status(400).send(err);
       }
 
@@ -67,65 +74,63 @@ router.post('/simulations', /*auth.validateRole('simulation', 'create'), auth.va
 
       user.save(function(err) {
         if (err) {
-          res.status(500).send(err);
+          logger.error('Unable to save user', err);
+          return res.status(500).send(err);
         }
 
-        // send response*/
-        res.send({ simulation: simulation });
-      /*});
-    });*/
+        // send response
+        res.send({ simulation });
+      });
+    });
   });
 });
 
 router.put('/simulations/:id', /*auth.validateRole('simulation', 'update'),*/ function(req, res) {
-  // get simulation
-  Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
+  Simulation.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, simulation) {
     if (err) {
       logger.log('verbose', 'PUT Unknown simulation for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
-    /*// validate owner
-    if (simulation.owner != req.decoded._doc._id) {
-      return res.status(403).send({ success: false, message: 'User is not owner' });
-    }*/
-
     // update relationships
-    /*if (req.body.simulation.owner && req.body.simulation.owner !== simulation.owner) {
+    if (req.body.simulation.user && req.body.simulation.user !== simulation.user) {
       // remove from old user
-      User.findOne({ _id: simulation.owner }, function(err, user) {
+      User.findOne({ _id: simulation.user }, function(err, user) {
         if (err) {
-          return console.log(err);
+          logger.error('Unable to find user ' + simulation.user);
+          return res.status(500).send(err);
         }
 
-        for (var i = 0; i < user.simulations; i++) {
-          if (user.simulations[i] === simulation._id) {
-            user.simulations.splice(i, 1);
-          }
-        }
+        // remove simulation from user
+        user.simulations = user.simulations.filter(function(element) {
+          return element._id !== simulation._id;
+        });
 
         user.save(function(err) {
           if (err) {
-            return console.log(err);
+            logger.error('Unable to save user ' + simulation.user, err);
+            return res.status(500).send(err);
           }
         });
       });
 
       // add to new user
-      User.findOne({ _id: req.body.simulation.owner }, function(err, user) {
+      User.findOne({ _id: req.body.simulation.user }, function(err, user) {
         if (err) {
-          return console.log(err);
+          logger.verbose('PUT Simulation Unknown user for id: ' + req.body.simulation.user);
+          return res.status(400).send(err);
         }
 
         user.simulations.push(simulation._id);
 
         user.save(function(err) {
           if (err) {
-            return console.log(err);
+            logger.error('Unable to save user ' + req.body.simulation.user, err);
+            return res.status(500).send(err);
           }
         });
       });
-    }*/
+    }
 
     // update all properties
     for (property in req.body.simulation) {
@@ -139,56 +144,45 @@ router.put('/simulations/:id', /*auth.validateRole('simulation', 'update'),*/ fu
         return res.status(400).send(err);
       }
 
-      res.send({ simulation: simulation });
+      res.send({ simulation });
     });
   });
 });
 
 router.get('/simulations/:id', /*auth.validateRole('simulation', 'read'),*/ function(req, res) {
-  Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
+  Simulation.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, simulation) {
     if (err) {
       logger.log('verbose', 'GET Unknown simulation for id: ' + req.params.id);
       return res.send(err);
     }
 
-    // validate owner
-    /*if (simulation.owner == req.decoded._doc._id) {
-      */res.send({ simulation: simulation });/*
-    } else {
-      res.status(403).send({ success: false, message: 'User is not owner' });
-    }*/
+    res.send({ simulation });
   });
 });
 
 router.delete('/simulations/:id', /*auth.validateRole('simulation', 'delete'),*/ function(req, res) {
-  Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
+  Simulation.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, simulation) {
     if (err) {
       logger.log('verbose', 'DELETE Unknown simulation for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
-    // validate owner
-    /*if (simulation.owner != req.decoded._doc._id) {
-      return res.status(403).send({ success: false, message: 'User is not owner' });
-    }*/
-
-    // remove from owner's list
-    /*User.findOne({ _id: simulation.owner }, function(err, user) {
+    // remove from user's list
+    User.findOne({ _id: simulation.user }, function(err, user) {
       if (err) {
+        logger.error('Unable to find user ' + simulation.user, err);
         return res.status(500).send(err);
       }
 
-      for (var i = 0; user.simulations.length; i++) {
-        var id = String(user.simulations[i]);
-        if (id == simulation._id) {
-          user.simulations.splice(i, 1);
-        }
-      }
+      user.simulations = user.simulations.filter(function(element) {
+        return element._id !== simulation._id;
+      });
 
       user.save(function(err) {
         if (err) {
+          logger.error('Unable to save user ' + simulation.user, err);
           return res.status(500).send(err);
-        }*/
+        }
 
         // remove simulation itself
         simulation.remove(function(err) {
@@ -199,8 +193,8 @@ router.delete('/simulations/:id', /*auth.validateRole('simulation', 'delete'),*/
 
           res.send({});
         });
-      /*});
-    });*/
+      });
+    });
   });
 });
 

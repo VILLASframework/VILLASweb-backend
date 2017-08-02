@@ -32,28 +32,8 @@ var simulationSchema = new Schema({
   name: { type: String, required: true },
   running: { type: Boolean, default: false },
   models: { type: Array, default: [] },
-  projects: [{ type: Schema.Types.ObjectId, ref: 'Project', default: [] }]
-});
-
-simulationSchema.pre('remove', function(callback) {
-  // delete all projects belonging to this simulation
-  this.projects.forEach(function(id) {
-    Project.findOne({ _id: id }, function(err, project) {
-      if (err) {
-        logger.error('Unable to find project for id: ' + id, err);
-        return;
-      }
-
-      project.remove(function(err) {
-        if (err) {
-          logger.error('Unable to remove project', { err, project });
-          return;
-        }
-      });
-    });
-  });
-
-  callback();
+  projects: [{ type: Schema.Types.ObjectId, ref: 'Project', default: [] }],
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 });
 
 module.exports = mongoose.model('Simulation', simulationSchema);

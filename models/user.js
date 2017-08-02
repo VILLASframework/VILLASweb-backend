@@ -25,6 +25,7 @@ var bcrypt = require('bcrypt-nodejs');
 
 var Project = require('./project');
 var Simulation = require('./simulation');
+var File = require('./file');
 
 var Schema = mongoose.Schema;
 
@@ -82,37 +83,27 @@ userSchema.pre('save', function(callback) {
 // execute before the user is deleted
 userSchema.pre('remove', function(callback) {
   // delete all projects belonging to this user
-  this.projects.forEach(function(id) {
-    Project.findOne({ _id: id }, function(err, project) {
-      if (err) {
-        logger.error('Unable to find project for id: ' + id, err);
-        return;
-      }
-
-      project.remove(function(err) {
-        if (err) {
-          logger.error('Unable to remove project', { err, project });
-          return;
-        }
-      });
-    });
+  Project.remove({ user: this._id }, function(err) {
+    if (err) {
+      logger.error('Unable to remove projects', err);
+      return;
+    }
   });
 
   // delete all simulations belonging to this user
-  this.simulations.forEach(function(id) {
-    Simulation.findOne({ _id: id }, function(err, simulation) {
-      if (err) {
-        logger.error('Unable to find simulation for id: ' + id, err);
-        return;
-      }
+  Simulation.remove({ user: this._id }, function(err) {
+    if (err) {
+      logger.error('Unable to remove simulations', err);
+      return;
+    }
+  });
 
-      simulation.remove(function(err) {
-        if (err) {
-          logger.error('Unable to remove simulation', { err, simulation });
-          return;
-        }
-      });
-    });
+  // delete all files belonging to this user
+  File.remove({ user: this._id}, function(err) {
+    if (err) {
+      logger.error('Unable to remove files', err);
+      return;
+    }
   });
 
   callback();

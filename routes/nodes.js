@@ -43,13 +43,13 @@ router.get('/nodes', function(req, res) {
       return res.status(400).send(err);
     }
 
-    res.send({ nodes: nodes });
+    res.send({ nodes });
   });
 });
 
 router.post('/nodes', function(req, res) {
   // create new node
-  var node = new Node(req.body.node);
+  const node = new Node(req.body.node);
 
   node.save(function(err) {
     if (err) {
@@ -57,7 +57,7 @@ router.post('/nodes', function(req, res) {
       return res.status(400).send(err);
     }
 
-    res.send({ node: node });
+    res.send({ node });
   });
 });
 
@@ -81,7 +81,7 @@ router.put('/nodes/:id', function(req, res) {
         return res.status(500).send(err);
       }
 
-      res.send({ node: node });
+      res.send({ node });
     });
   });
 });
@@ -93,7 +93,7 @@ router.get('/nodes/:id', function(req, res) {
       return res.status(400).send(err);
     }
 
-    res.send({ node: node });
+    res.send({ node });
   });
 });
 

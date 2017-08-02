@@ -177,7 +177,7 @@ router.route('/authenticate').post(function(req, res) {
     return res.status(401).send({ success: false, message: 'Invalid credentials' });
   }
 
-  User.findOne({ username: req.body.username }, function(err, user) {
+  User.findOne({ username: req.body.username }, 'password', function(err, user) {
     // handle errors and missing user
     if (err) {
       logger.log('verbose', 'Unknown user for username: ' + req.body.username);
@@ -191,13 +191,16 @@ router.route('/authenticate').post(function(req, res) {
 
     // validate password
     user.verifyPassword(req.body.password, function(err, isMatch) {
-      if (err || !isMatch) {
-        logger.log('verbose', 'Invalid credentials', req.body);
+      if (err) {
+        logger.error('Unable to compare passwords:', err);
+        return res.status(500).send({ success: false, message: 'Internal server error' });
+      } else if (!isMatch) {
+        logger.log('verbose', 'Invalid credentials:', req.body);
         return res.status(401).send({ success: false, message: 'Invalid credentials' });
       }
 
       // create authentication token
-      var token = jwt.sign(user, config.secret, {});
+      const token = jwt.sign(user, config.secret, {});
 
       return res.send({ success: true, message: 'Authenticated', token: token});
     });

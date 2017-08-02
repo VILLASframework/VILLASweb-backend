@@ -41,32 +41,32 @@ var router = express.Router();
 router.use('/upload', auth.validateToken);
 
 // serve public files
-let publicDir = path.join(__dirname, config.publicDir);
+const publicDir = path.join(__dirname, config.publicDir);
 //router.use(express.static(publicDir));
 
 // routes
-router.post('/upload', auth.validateRole('visualization', 'update'), function(req, res) {
+router.post('/upload', function(req, res) {
   // find upload author
-  User.findOne({ _id: req.decoded._doc._id }, function(err, user) {
+  User.findOne({ _id: req.decoded._id }, function(err, user) {
     if (err) {
-      logger.log('verbose', 'GET Unable to find user for id: ' + req.decoded._doc._id);
+      logger.log('verbose', 'GET Unable to find user for id: ' + req.decoded._id);
       res.status(500).send({ success: false, message: 'File could not be uploaded.' });
     }
 
     // create form object with the upload dir corresponding to user's
-    var form = new formidable.IncomingForm();
-    var userFolder = path.join(publicDir, user._id + ''); // ensure is a string
+    const form = new formidable.IncomingForm();
+    const userFolder = path.join(publicDir, user._id + ''); // ensure is a string
     form.uploadDir = userFolder;
 
     form.on('error', function(error) {
       logger.error('Unable to process incoming form', error);
-      res.status(400).send({ success: false, message: 'File could not be uploaded.' });
+      return res.status(400).send({ success: false, message: 'File could not be uploaded.' });
     });
 
     form.on('file', function(field, file) {
       // create file object, assigning path to userID + formidable's created name
-      var filePath = path.join(user._id + '', path.basename(file.path));
-      var fileObj = new File({ name: file.name, path: filePath, type: file.type, size: file.size });
+      const filePath = path.join(user._id + '', path.basename(file.path));
+      var fileObj = new File({ name: file.name, path: filePath, type: file.type, size: file.size, user: user._id });
 
       // if file is an image, get the image size
       if (file.type.split("/")[0] === "image") {
@@ -78,7 +78,7 @@ router.post('/upload', auth.validateRole('visualization', 'update'), function(re
       fileObj.save(function(err) {
         if (err) {
           logger.error('Unable to save reference file', err);
-          res.status(500).send({ success: false, message: 'File could not be uploaded.' });
+          return res.status(500).send({ success: false, message: 'File could not be uploaded.' });
         }
 
         user.files.push(fileObj._id);
@@ -86,7 +86,7 @@ router.post('/upload', auth.validateRole('visualization', 'update'), function(re
         user.save(function(err) {
           if (err) {
             logger.error('Unable to save user', user);
-            res.status(500).send({ success: false, message: 'File could not be uploaded.' });
+            return res.status(500).send({ success: false, message: 'File could not be uploaded.' });
           }
         });
       });

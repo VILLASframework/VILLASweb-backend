@@ -39,19 +39,25 @@ router.use('/projects', auth.validateToken);
 // routes
 router.get('/projects', /*auth.validateRole('project', 'read'),*/ function(req, res) {
   // get all projects
-  Project.find(function(err, projects) {
+  Project.find({ user: req.decoded._id }, function(err, projects) {
     if (err) {
       logger.error('Unable to receive projects', err);
       return res.status(400).send(err);
     }
 
-    res.send({ projects: projects });
+    res.send({ projects });
   });
 });
 
 router.post('/projects', /*auth.validateRole('project', 'create'),*/ function(req, res) {
+  // only add project to logged-in user
+  if (req.body.project.user !== req.decoded._id) {
+    logger.log('verbose', 'POST Unable to add project to different user ' + req.body.simulation.user);
+    return res.status(400).send({});
+  }
+
   // create new project
-  var project = new Project(req.body.project);
+  const project = new Project(req.body.project);
 
   // save project
   project.save(function(err) {
@@ -61,8 +67,9 @@ router.post('/projects', /*auth.validateRole('project', 'create'),*/ function(re
     }
 
     // add project to user
-    /*User.findOne({ _id: project.owner }, function(err, user) {
+    User.findOne({ _id: project.user }, function(err, user) {
       if (err) {
+        logger.error('Unable to find user ' + project.user, err);
         return res.status(400).send(err);
       }
 
@@ -70,11 +77,12 @@ router.post('/projects', /*auth.validateRole('project', 'create'),*/ function(re
 
       user.save(function(err) {
         if (err) {
+          logger.error('Unable to save user ' + project.user, err);
           return res.status(500).send(err);
-        }*/
+        }
 
         // add project to simulation
-        Simulation.findOne({ _id: project.simulation }, function(err, simulation) {
+        Simulation.findOne({ _id: project.simulation, user: project.user }, function(err, simulation) {
           if (err) {
             logger.log('verbose', 'Unknown simulation for id: ' + project.simulation, { err, project });
             return res.status(400).send(err);
@@ -88,95 +96,94 @@ router.post('/projects', /*auth.validateRole('project', 'create'),*/ function(re
               return res.status(500).send(err);
             }
 
-            res.send({ project: project });
+            res.send({ project });
           });
         });
-      /*});
-    });*/
+      });
+    });
   });
 });
 
 router.put('/projects/:id', /*auth.validateRole('project', 'update'),*/ function(req, res) {
   // get project
-  Project.findOne({ _id: req.params.id }, function(err, project) {
+  Project.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, project) {
     if (err) {
       logger.log('verbose', 'PUT Unknown project for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
     // update relationships
-    /*if (req.body.project.owner && req.body.project.owner !== project.owner) {
+    if (req.body.project.user && req.body.project.user !== project.user) {
       // remove from old user
-      User.findOne({ _id: project.owner }, function(err, user) {
+      User.findOne({ _id: project.user }, function(err, user) {
         if (err) {
-          return console.log(err);
+          logger.error('Unable to find user ' + project.user, err);
+          return res.status(500).send(err);
         }
 
-        for (var i = 0; i < user.projects; i++) {
-          if (user.projects[i] === project._id) {
-            user.projects.splice(i, 1);
-          }
-        }
+        user.projects = user.projects.filter(function(element) {
+          return element._id !== project._id;
+        });
 
         user.save(function(err) {
           if (err) {
-            return console.log(err);
+            logger.error('Unable to save user ' + project.user, err);
+            return res.status(500).send(err);
           }
         });
       });
 
       // add to new user
-      User.findOne({ _id: req.body.project.owner }, function(err, user) {
+      User.findOne({ _id: req.body.project.user }, function(err, user) {
         if (err) {
-          return console.log(err);
+          logger.error('Unable to find user ' + req.body.project.user, err);
+          return res.status(500).send(err);
         }
 
         user.projects.push(project._id);
 
         user.save(function(err) {
           if (err) {
-            return console.log(err);
+            logger.error('Unable to save user ' + req.body.project.user, err);
+            return res.status(500).send(err);
           }
         });
       });
-    }*/
-
+    }
 
     if (req.body.project.simulation && req.body.project.simulation !== project.simulation) {
       // remove from old simulation
-      Simulation.findOne({ _id: project.simulation }, function(err, simulation) {
+      Simulation.findOne({ _id: project.simulation, user: project.user }, function(err, simulation) {
         if (err) {
-          logger.verbose('Unable to find simulation for id: ' + project.simulation);
-          return;
+          logger.error('Unable to find simulation ' + project.simulation);
+          return res.status(500).send(err);
         }
 
-        for (var i = 0; i < simulation.projects; i++) {
-          if (simulation.projects[i] === project._id) {
-            simulation.projects.splice(i, 1);
-          }
-        }
+        simulation.projects = simulation.projects.filter(function(element) {
+          return element._id !== project._id;
+        });
 
         simulation.save(function(err) {
           if (err) {
-            logger.error('Unable to save simulation', simulation);
-            return;
+            logger.error('Unable to save simulation ' + project.simulation, err);
+            return res.status(500).send(err);
           }
         });
       });
 
       // add to new simulation
-      Simulation.findOne({ _id: req.body.project.simulation }, function(err, simulation) {
+      Simulation.findOne({ _id: req.body.project.simulation, user: req.decoded._id }, function(err, simulation) {
         if (err) {
-          logger.error('Unable to find simulation for id: ' + req.body.project.simulation);
-          return;
+          logger.error('Unable to find simulation ' + req.body.project.simulation, err);
+          return res.status(500).send(err);
         }
 
         simulation.projects.push(project._id);
 
         simulation.save(function(err) {
           if (err) {
-            logger.error('Unable to save simulation', simulation);
-            return;
+            logger.error('Unable to save simulation ', req.body.project.simulation);
+            return res.status(500).send(err);
           }
         });
       });
@@ -194,13 +201,13 @@ router.put('/projects/:id', /*auth.validateRole('project', 'update'),*/ function
         return res.status(500).send(err);
       }
 
-      res.send({ project: project });
+      res.send({ project });
     });
   });
 });
 
 router.get('/projects/:id', /*auth.validateRole('project', 'read'),*/ function(req, res) {
-  Project.findOne({ _id: req.params.id }, function(err, project) {
+  Project.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, project) {
     if (err) {
       logger.log('verbose', 'GET Unknown project for id: ' + req.params.id);
       return res.status(400).send(err);
@@ -211,29 +218,28 @@ router.get('/projects/:id', /*auth.validateRole('project', 'read'),*/ function(r
 });
 
 router.delete('/projects/:id', /*auth.validateRole('project', 'delete'),*/ function(req, res) {
-  Project.findOne({ _id: req.params.id }, function(err, project) {
+  Project.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, project) {
     if (err) {
       logger.log('verbose', 'DELETE Unknown project for id: ' + req.params.id);
       return res.status(400).send(err);
     }
 
-    // remove from owner's list
-    /*User.findOne({ _id: project.owner }, function(err, user) {
+    // remove from user's list
+    User.findOne({ _id: project.user }, function(err, user) {
       if (err) {
-        return res.status(400).send(err);
+        logger.error('Unable to find user ' + project.user, err);
+        return res.status(500).send(err);
       }
 
-      for (var i = 0; user.projects.length; i++) {
-        var id = String(user.projects[i]);
-        if (id == project._id) {
-          user.projects.splice(i, 1);
-        }
-      }
+      user.projects = user.projects.filter(function(element) {
+        return element._id !== project._id;
+      });
 
       user.save(function(err) {
         if (err) {
+          logger.error('Unable to save user ' + project.user, err);
           return res.status(500).send(err);
-        }*/
+        }
 
         // remove the project
         project.remove(function(err) {
@@ -244,8 +250,8 @@ router.delete('/projects/:id', /*auth.validateRole('project', 'delete'),*/ funct
 
           res.send({});
         });
-      /*});
-    });*/
+      });
+    });
   });
 });
 
