@@ -33,7 +33,7 @@ var projectSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   visualizations: [{ type: Schema.Types.ObjectId, ref: 'Visualization', default: [] }],
   simulation: { type: Schema.Types.ObjectId, ref: 'Simulation', required: true }
-});
+}, { versionKey: false });
 
 projectSchema.pre('remove', function(callback) {
   // delete all visualizations belonging to this project

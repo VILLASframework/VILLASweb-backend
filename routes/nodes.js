@@ -48,6 +48,11 @@ router.get('/nodes', function(req, res) {
 });
 
 router.post('/nodes', function(req, res) {
+  // delete id if equals 'null'
+  if (req.body.node._id === null) {
+    delete req.body.node._id;
+  }
+
   // create new node
   const node = new Node(req.body.node);
 

@@ -50,6 +50,11 @@ router.get('/projects', /*auth.validateRole('project', 'read'),*/ function(req, 
 });
 
 router.post('/projects', /*auth.validateRole('project', 'create'),*/ function(req, res) {
+  // delete id if equals 'null'
+  if (req.body.project._id === null) {
+    delete req.body.project._id;
+  }
+
   // create new project
   req.body.project.user = req.decoded._id;
   const project = new Project(req.body.project);

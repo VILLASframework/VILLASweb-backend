@@ -48,6 +48,11 @@ router.get('/simulations', /*auth.validateRole('simulation', 'read'),*/ function
 });
 
 router.post('/simulations', /*auth.validateRole('simulation', 'create'),*/ function(req, res) {
+  // delete id if equals 'null'
+  if (req.body.simulation._id === null) {
+    delete req.body.simulation._id;
+  }
+
   // create new simulation
   req.body.simulation.user = req.decoded._id;
   const simulation = new Simulation(req.body.simulation);

@@ -33,7 +33,7 @@ var nodeSchema = new Schema({
   endpoint: { type: String, required: true, unique: true },
   config: { type: Schema.Types.Mixed, default: {} },
   simulators: [{ type: Schema.Types.Mixed, default: [] }]
-});
+}, { versionKey: false });
 
 nodeSchema.post('save', function() {
   // remove old file

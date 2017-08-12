@@ -57,6 +57,10 @@ router.post('/visualizations', /*auth.validateRole('visualization', 'create'),*/
     }
 
     // create new visualization
+    if (req.body.visualization._id === null) {
+      delete req.body.visualization._id;
+    }
+
     req.body.visualization.user = req.decoded._id;
     const visualization = new Visualization(req.body.visualization);
   

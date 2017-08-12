@@ -33,6 +33,6 @@ var fileSchema = new Schema({
   dimensions: { type: Schema.Types.Mixed },
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   date: { type: Date, default: Date.now }
-});
+}, { versionKey: false });
 
 module.exports = mongoose.model('File', fileSchema);

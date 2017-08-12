@@ -33,6 +33,6 @@ var simulationSchema = new Schema({
   models: { type: Array, default: [] },
   projects: [{ type: Schema.Types.ObjectId, ref: 'Project', default: [] }],
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-});
+}, { versionKey: false });
 
 module.exports = mongoose.model('Simulation', simulationSchema);
