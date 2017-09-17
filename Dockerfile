@@ -15,6 +15,9 @@ RUN mkdir -p /usr/src/app/nodes
 # Bundle app source
 COPY . /usr/src/app
 
+# Store uploaded files into a volume
+VOLUME /usr/src/app/public/
+
 # Run the app
 EXPOSE 4000
 CMD [ "npm", "start" ]
