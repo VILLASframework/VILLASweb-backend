@@ -57,6 +57,7 @@ router.post('/upload', function(req, res) {
     const form = new formidable.IncomingForm();
     const userFolder = path.join(publicDir, user._id + ''); // ensure is a string
     form.uploadDir = userFolder;
+    form.keepExtensions = true;
 
     form.on('error', function(error) {
       logger.error('Unable to process incoming form', error);
