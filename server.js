@@ -37,6 +37,7 @@ var simulations = require('./routes/simulations');
 var upload = require('./routes/upload');
 var files = require('./routes/files');
 var nodes = require('./routes/nodes');
+var counts = require('./routes/counts');
 
 var User = require('./models/user');
 
@@ -91,6 +92,7 @@ app.use('/api/v1', simulations);
 app.use('/api/v1', upload);
 app.use('/api/v1', files);
 app.use('/api/v1', nodes);
+app.use('/api/v1', counts);
 
 app.use('/public', express.static(__dirname + '/public'));
 app.use('/nodes', express.static(__dirname + '/nodes'));
