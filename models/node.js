@@ -32,7 +32,8 @@ var nodeSchema = new Schema({
   name: { type: String, required: true, unique: true, set: function(name) { this._name = this.name; return name; } },
   endpoint: { type: String, required: true, unique: true },
   config: { type: Schema.Types.Mixed, default: {} },
-  simulators: [{ type: Schema.Types.Mixed, default: [] }]
+  simulators: [{ type: Schema.Types.Mixed, default: [] }],
+  relativeEndpoint: { type: Boolean, default: false }
 }, { versionKey: false });
 
 nodeSchema.post('save', function() {
