@@ -11,5 +11,5 @@ services:
       - NODE_ENV=production
 
   database:
-    image: mongo:latest
+    image: mongo:3.2
     user: mongodb
