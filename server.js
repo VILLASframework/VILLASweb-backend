@@ -76,7 +76,7 @@ app.use(cors());
 
 // connect to database
 mongoose.Promise = global.Promise;
-mongoose.connect(config.databaseURL + config.databaseName, { useMongoClient: true }).then(() => {
+mongoose.connect(config.databaseURL + config.databaseName).then(() => {
   logger.info('Connected to database ' + config.databaseURL + config.databaseName);
 }, (err) => {
   logger.error('Unable to connect to database \'' + config.databaseURL + config.databaseName + '\'');
