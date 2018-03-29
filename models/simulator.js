@@ -1,7 +1,7 @@
 /**
- * File: config.js
+ * File: simulator.js
  * Author: Markus Grigull <mgrigull@eonerc.rwth-aachen.de>
- * Date: 23.06.2016
+ * Date: 03.03.2018
  *
  * This file is part of VILLASweb-backend.
  *
@@ -19,33 +19,18 @@
  * along with VILLASweb-backend. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-module.exports = {
-  publicDir: '../public',
-  development: {
-    databaseName: 'VILLAS',
-    databaseURL: 'mongodb://localhost:27017/',
-    amqpEndpoint: 'amqp://localhost',
-    amqpUpdateRate: 5,
-    port: 4000,
-    secret: 'longsecretislong',
-    logLevel: 'verbose',        // possible values: error, warn, info, verbose or debug
-    admin: {
-      username: 'admin',
-      password: 'admin'
-    }
-  },
-  production: {
-    databaseName: 'VILLAS',
-    databaseURL: 'mongodb://database:27017/',
-    amqpEndpoint: 'amqp://rabbit',
-    amqpUpdateRate: 60,
-    port: 4000,
-    secret: 'longsecretislong',
-    logLevel: 'warn',         // possible values: error, warn, info, verbose or debug
-    logFile: 'villasweb-backend_log.txt',
-    admin: {
-      username: 'admin',
-      password: 'admin'
-    }
-  }
-};
+// include
+const mongoose = require('mongoose');
+
+// simulator model
+const simulatorSchema = new mongoose.Schema({
+  uuid: { type: String, required: true, unique: true },
+  host: { type: String, default: "" },
+  model: { type: String, default: "" },
+  uptime: { type: Number, default: 0 },
+  state: { type: String, default: "" },
+  properties: { type: mongoose.Schema.Types.Mixed, default: {} },
+  rawProperties: { type: mongoose.Schema.Types.Mixed, default: {} },
+}, { versionKey: false });
+
+module.exports = mongoose.model('Simulator', simulatorSchema);

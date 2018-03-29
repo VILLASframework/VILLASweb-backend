@@ -38,6 +38,8 @@ var upload = require('./routes/upload');
 var files = require('./routes/files');
 var nodes = require('./routes/nodes');
 var counts = require('./routes/counts');
+var simulators = require('./routes/simulators');
+var amqpClient = require('./broker/client');
 
 var User = require('./models/user');
 
@@ -84,6 +86,21 @@ mongoose.connect(config.databaseURL + config.databaseName).then(() => {
   process.exit();
 });
 
+// connect to amqp broker
+amqpClient.connect(config.amqpEndpoint, err => {
+  if (err) {
+    logger.error('AMQP: ' + err);
+    return;
+  }
+
+  logger.info('Connected to amqp broker ' + config.amqpEndpoint);
+
+  // request simulator status
+  setInterval(() => {
+    amqpClient.ping();
+  }, config.amqpUpdateRate * 1000);
+});
+
 // register routes
 app.use('/api/v1', users);
 app.use('/api/v1', projects);
@@ -93,6 +110,7 @@ app.use('/api/v1', upload);
 app.use('/api/v1', files);
 app.use('/api/v1', nodes);
 app.use('/api/v1', counts);
+app.use('/api/v1', simulators);
 
 app.use('/public', express.static(__dirname + '/public'));
 app.use('/nodes', express.static(__dirname + '/nodes'));
