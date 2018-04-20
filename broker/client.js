@@ -105,55 +105,55 @@ class AMQPClient {
     this._sendAction({ action: 'ping' });
   }
 
-  resetSimulator(uuid = null) {
+  resetSimulator(uuid, when) {
     const data = { 
       action: 'simulator.reset', 
-      when: Date.now() 
+      when
     };
 
     this._sendAction(data, uuid);
   }
 
-  shutdownSimulator(uuid = null) {
+  shutdownSimulator(uuid, when) {
     const data = { 
       action: 'simulator.shutdown', 
-      when: Date.now() 
+      when
     };
 
     this._sendAction(data, uuid);
   }
 
-  startSimulator(uuid = null) {
+  startSimulator(uuid, when) {
     const data = { 
       action: 'simulator.start', 
-      when: Date.now() 
+      when
     };
 
     this._sendAction(data, uuid);
   }
 
-  stopSimulator(uuid = null) {
+  stopSimulator(uuid, when) {
     const data = { 
       action: 'simulator.stop', 
-      when: Date.now() 
+      when
     };
 
     this._sendAction(data, uuid);
   }
 
-  pauseSimulator(uuid = null) {
+  pauseSimulator(uuid, when) {
     const data = { 
       action: 'simulator.pause', 
-      when: Date.now() 
+      when
     };
 
     this._sendAction(data, uuid);
   }
 
-  resumeSimulator(uuid = null) {
+  resumeSimulator(uuid, when) {
     const data = { 
       action: 'simulator.resume', 
-      when: Date.now() 
+      when
     };
 
     this._sendAction(data, uuid);

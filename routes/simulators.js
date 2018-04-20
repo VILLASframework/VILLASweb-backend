@@ -128,13 +128,31 @@ router.post('/simulators/:id', (req, res) => {
       return res.status(400).send(err);
     }
 
+    const when = req.body.when || Date.now() / 1000.0;
+
     switch (req.body.action) {
       case 'reset':
-        amqpClient.resetSimulator(simulator.uuid);
+        amqpClient.resetSimulator(simulator.uuid, when);
         break;
 
       case 'shutdown':
-        amqpClient.shutdownSimulator(simulator.uuid);
+        amqpClient.shutdownSimulator(simulator.uuid, when);
+        break;
+
+      case 'start':
+        amqpClient.startSimulator(simulator.uuid, when);
+        break;
+
+      case 'stop':
+        amqpClient.stopSimulator(simulator.uuid, when);
+        break;
+
+      case 'pause':
+        amqpClient.pauseSimulator(simulator.uuid, when);
+        break;
+
+      case 'resume':
+        amqpClient.resumeSimulator(simulator.uuid, when);
         break;
 
       default:
