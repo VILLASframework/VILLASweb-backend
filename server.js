@@ -39,6 +39,7 @@ var files = require('./routes/files');
 var nodes = require('./routes/nodes');
 var counts = require('./routes/counts');
 var simulators = require('./routes/simulators');
+var simulationModels = require('./routes/simulationModels');
 var amqpClient = require('./broker/client');
 
 var User = require('./models/user');
@@ -111,6 +112,7 @@ app.use('/api/v1', files);
 app.use('/api/v1', nodes);
 app.use('/api/v1', counts);
 app.use('/api/v1', simulators);
+app.use('/api/v1', simulationModels);
 
 app.use('/public', express.static(__dirname + '/public'));
 app.use('/nodes', express.static(__dirname + '/nodes'));

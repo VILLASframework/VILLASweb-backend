@@ -1,7 +1,7 @@
 /**
- * File: simulation.js
+ * File: simulationModel.js
  * Author: Markus Grigull <mgrigull@eonerc.rwth-aachen.de>
- * Date: 26.07.2016
+ * Date: 20.04.2018
  *
  * This file is part of VILLASweb-backend.
  *
@@ -19,18 +19,16 @@
  * along with VILLASweb-backend. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-// include
 const mongoose = require('mongoose');
 
-const logger = require('../utils/logger');
-
-// simulation model
-const simulationSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  running: { type: Boolean, default: false },
-  models: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SimulationModel', default: [] }],
-  projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project', default: [] }],
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+const simulationModelSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    simulation: { type: mongoose.Schema.Types.ObjectId, ref: 'Simulation', required: true },
+    simulator: { type: mongoose.Schema.Types.ObjectId, ref: 'Simulator', required: true },
+    outputLength: { type: Number, default: 1 },
+    inputLength: { type: Number, default: 1 },
+    outputMapping: { type: mongoose.Schema.Types.Mixed, default: {} },
+    inputMapping: { type: mongoose.Schema.Types.Mixed, default: {} }
 }, { versionKey: false });
 
-module.exports = mongoose.model('Simulation', simulationSchema);
+module.exports = mongoose.model('SimulationModel', simulationModelSchema);
