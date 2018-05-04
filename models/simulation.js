@@ -20,19 +20,17 @@
  ******************************************************************************/
 
 // include
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-var logger = require('../utils/logger');
-
-var Schema = mongoose.Schema;
+const logger = require('../utils/logger');
 
 // simulation model
-var simulationSchema = new Schema({
+const simulationSchema = new mongoose.Schema({
   name: { type: String, required: true },
   running: { type: Boolean, default: false },
-  models: { type: Array, default: [] },
-  projects: [{ type: Schema.Types.ObjectId, ref: 'Project', default: [] }],
-  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  models: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SimulationModel', default: [] }],
+  projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project', default: [] }],
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 }, { versionKey: false });
 
 module.exports = mongoose.model('Simulation', simulationSchema);

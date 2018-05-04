@@ -20,17 +20,18 @@
  ******************************************************************************/
 
 // include
-var express = require('express');
+const express = require('express');
 
-var auth = require('../auth');
-var logger = require('../utils/logger');
+const auth = require('../auth');
+const logger = require('../utils/logger');
 
 // models
-var Simulation = require('../models/simulation');
-var User = require('../models/user');
+const Simulation = require('../models/simulation');
+const SimulationModel = require('../models/simulationModel');
+const User = require('../models/user');
 
 // create router
-var router = express.Router();
+const router = express.Router();
 
 // all model routes need authentication
 router.use('/simulations', auth.validateToken);
@@ -165,6 +166,15 @@ router.delete('/simulations/:id', /*auth.validateRole('simulation', 'delete'),*/
     if (err) {
       logger.log('verbose', 'DELETE Unknown simulation for id: ' + req.params.id);
       return res.status(400).send(err);
+    }
+
+    // delete all simulation models
+    for (let id of simulation.models) {
+      SimulationModel.findByIdAndRemove(id, err => {
+        if (err) {
+          logger.error('Unable to delete simulation model ' + id);
+        }
+      });
     }
 
     // remove from user's list

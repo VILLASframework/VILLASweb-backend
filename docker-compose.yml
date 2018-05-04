@@ -7,12 +7,15 @@ services:
       - "4000:4000"
     links:
       - database
+      - rabbit
     environment:
       - NODE_ENV=production
 
   database:
     image: mongo:3.2
     user: mongodb
+    ports:
+      - "27017:27017"
 
   express:
     image: mongo-express
@@ -20,3 +23,9 @@ services:
       - "8081:8081"
     links:
       - database:mongo
+
+  rabbit:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

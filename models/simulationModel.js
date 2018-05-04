@@ -1,7 +1,7 @@
 /**
- * File: config.js
+ * File: simulationModel.js
  * Author: Markus Grigull <mgrigull@eonerc.rwth-aachen.de>
- * Date: 23.06.2016
+ * Date: 20.04.2018
  *
  * This file is part of VILLASweb-backend.
  *
@@ -19,33 +19,16 @@
  * along with VILLASweb-backend. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-module.exports = {
-  publicDir: '../public',
-  development: {
-    databaseName: 'VILLAS',
-    databaseURL: 'mongodb://localhost:27017/',
-    amqpEndpoint: 'amqp://localhost',
-    amqpUpdateRate: 5,
-    port: 4000,
-    secret: 'longsecretislong',
-    logLevel: 'verbose',        // possible values: error, warn, info, verbose or debug
-    admin: {
-      username: 'admin',
-      password: 'admin'
-    }
-  },
-  production: {
-    databaseName: 'VILLAS',
-    databaseURL: 'mongodb://database:27017/',
-    amqpEndpoint: 'amqp://rabbit',
-    amqpUpdateRate: 60,
-    port: 4000,
-    secret: 'longsecretislong',
-    logLevel: 'warn',         // possible values: error, warn, info, verbose or debug
-    logFile: 'villasweb-backend_log.txt',
-    admin: {
-      username: 'admin',
-      password: 'admin'
-    }
-  }
-};
+const mongoose = require('mongoose');
+
+const simulationModelSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    simulation: { type: mongoose.Schema.Types.ObjectId, ref: 'Simulation', required: true },
+    simulator: { type: mongoose.Schema.Types.ObjectId, ref: 'Simulator', required: true },
+    outputLength: { type: Number, default: 1 },
+    inputLength: { type: Number, default: 1 },
+    outputMapping: { type: mongoose.Schema.Types.Mixed, default: {} },
+    inputMapping: { type: mongoose.Schema.Types.Mixed, default: {} }
+}, { versionKey: false });
+
+module.exports = mongoose.model('SimulationModel', simulationModelSchema);
