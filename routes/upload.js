@@ -34,6 +34,8 @@ var logger = require('../utils/logger');
 var User = require('../models/user');
 var File = require('../models/file');
 
+const fileTypes = [ 'image', 'result', 'model', 'configuration' ];
+
 // create router
 var router = express.Router();
 
@@ -45,12 +47,17 @@ const publicDir = path.join(__dirname, config.publicDir);
 //router.use(express.static(publicDir));
 
 // routes
-router.post('/upload', function(req, res) {
+router.post('/upload/:type', function(req, res) {
+  if (fileTypes.indexOf(req.params.type) === -1) {
+    logger.log('verbose', 'POST Unknown file type ' + req.params.type);
+    return res.status(400).send({ success: false, message: 'Unknown file type ' + req.params.type });
+  }
+
   // find upload author
   User.findOne({ _id: req.decoded._id }, function(err, user) {
     if (err) {
-      logger.log('verbose', 'GET Unable to find user for id: ' + req.decoded._id);
-      res.status(500).send({ success: false, message: 'File could not be uploaded.' });
+      logger.log('verbose', 'POST Unable to find user for id: ' + req.decoded._id);
+      return res.status(500).send({ success: false, message: 'File could not be uploaded.' });
     }
 
     // create form object with the upload dir corresponding to user's
@@ -67,7 +74,7 @@ router.post('/upload', function(req, res) {
     form.on('file', function(field, file) {
       // create file object, assigning path to userID + formidable's created name
       const filePath = path.join(user._id + '', path.basename(file.path));
-      var fileObj = new File({ name: file.name, path: filePath, type: file.type, size: file.size, user: user._id });
+      var fileObj = new File({ name: file.name, path: filePath, type: req.params.type, mimeType: file.type, size: file.size, user: user._id });
 
       // if file is an image, get the image size
       if (file.type.split("/")[0] === "image") {
@@ -102,8 +109,7 @@ router.post('/upload', function(req, res) {
       // error occurred (ignore already existing)
       if (err && err.code != 'EEXIST') {
         logger.error('Unable to create directory', err);
-        res.status(500).send({ success: false, message: 'File could not be uploaded.'});
-        return;
+        return res.status(500).send({ success: false, message: 'File could not be uploaded.'});
       }
 
       // handle the request
