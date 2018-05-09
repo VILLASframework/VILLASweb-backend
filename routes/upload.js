@@ -44,7 +44,6 @@ router.use('/upload', auth.validateToken);
 
 // serve public files
 const publicDir = path.join(__dirname, config.publicDir);
-//router.use(express.static(publicDir));
 
 // routes
 router.post('/upload/:type', function(req, res) {

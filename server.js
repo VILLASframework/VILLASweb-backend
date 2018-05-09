@@ -41,6 +41,7 @@ var counts = require('./routes/counts');
 var simulators = require('./routes/simulators');
 var simulationModels = require('./routes/simulationModels');
 var amqpClient = require('./broker/client');
+var auth = require('./auth');
 
 var User = require('./models/user');
 
@@ -114,8 +115,7 @@ app.use('/api/v1', counts);
 app.use('/api/v1', simulators);
 app.use('/api/v1', simulationModels);
 
-app.use('/public', express.static(__dirname + '/public'));
-app.use('/nodes', express.static(__dirname + '/nodes'));
+app.use('/public', [ auth.validateToken, express.static(__dirname + '/public') ]);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
