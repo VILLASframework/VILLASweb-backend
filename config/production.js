@@ -1,5 +1,5 @@
 /**
- * File: default.js
+ * File: production.js
  * Author: Markus Grigull <mgrigull@eonerc.rwth-aachen.de>
  * Date: 10.05.2018
  *
@@ -22,14 +22,9 @@
 'use strict';
 
 module.exports = {
-    port: 4000,
-    databaseName: 'VILLAS',
-    databaseURL: 'mongodb://localhost:27017/',
-    secret: 'longsecretislong',
-    amqpEndpoint: 'amqp://localhost',
-    amqpUpdateRate: 60,
-    logLevel: 'error',
-    logFile: './log.txt',
-    publicDir: '../public',
-    defaultAdmin: false
+    databaseURL: 'mongodb://database:27017/',
+    amqpEndpoint: 'amqp://rabbit',
+    logLevel: 'warn',
+    logFile: 'villasweb-backend_log.txt',
+    defaultAdmin: true
 };
