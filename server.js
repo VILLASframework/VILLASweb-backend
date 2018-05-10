@@ -26,9 +26,9 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 var winston = require('winston');
 var expressWinston = require('express-winston');
-var git = require('git-rev-sync');
 
 // local include
+const config = require('./config/index');
 var logger = require('./utils/logger');
 var users = require('./routes/users');
 var projects = require('./routes/projects');
@@ -46,9 +46,6 @@ var User = require('./models/user');
 
 // create application
 var app = express();
-
-// load configuration
-var config = require('./config')[app.get('env')];
 
 // configure logger
 if (config.logLevel) {
@@ -69,7 +66,7 @@ if (config.logFile) {
 }
 
 logger.info('--- Started VILLASweb backend ---');
-//logger.info('Branch: ' + git.branch() + ', Commit: ' + git.short());
+logger.info('Environment: ' + config.environment);
 
 // configure app
 app.use(expressWinston.logger({ winstonInstance: logger, meta: false, colorize: true, msg: "HTTP {{req.method}} {{res.statusCode}} {{req.url}} {{res.responseTime}}ms" }));
@@ -125,8 +122,6 @@ app.use(function(req, res, next) {
 });
 
 // development error handler
-logger.info("Environment: " + app.get('env'));
-
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
@@ -146,9 +141,9 @@ app.listen(config.port, function() {
 });
 
 // add admin account
-if (config.admin) {
+if (config.defaultAdmin) {
   // check if admin account exists
-  User.findOne({ username: config.admin.username }, function(err, user) {
+  User.findOne({ username: 'admin' }, function(err, user) {
     if (err) {
       logger.error(err);
       return;
@@ -156,7 +151,7 @@ if (config.admin) {
 
     if (!user) {
       // create new admin user
-      var newUser = User({ username: config.admin.username, password: config.admin.password, role: 'admin' });
+      var newUser = User({ username: 'admin', password: 'admin', role: 'admin' });
       newUser.save(function(err) {
         if (err) {
           logger.error(err);
