@@ -1,5 +1,5 @@
 /**
- * File: index.js
+ * File: default.js
  * Author: Markus Grigull <mgrigull@eonerc.rwth-aachen.de>
  * Date: 10.05.2018
  *
@@ -21,10 +21,15 @@
 
 'use strict';
 
-const _ = require('lodash');
-
-const defaults = require('./default').default;
-const config = require('./' + (process.env.NODE_ENV || 'development'));
-
-// merge configuration file with defaults
-module.exports = _.merge({}, defaults, config, { environment: process.env.NODE_ENV || 'development' });
+module.exports = {
+    port: 4000,
+    databaseName: 'VILLAS',
+    databaseURL: 'mongodb://localhost:27017',
+    secret: 'longsecretislong',
+    amqpEndpoint: 'amqp://localhost',
+    amqpUpdateRate: 60,
+    logLevel: 'error',
+    logFile: './log.txt',
+    publicDir: '../public',
+    defaultAdmin: false
+};

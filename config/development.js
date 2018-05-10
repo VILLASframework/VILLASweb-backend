@@ -1,5 +1,5 @@
 /**
- * File: index.js
+ * File: development.js
  * Author: Markus Grigull <mgrigull@eonerc.rwth-aachen.de>
  * Date: 10.05.2018
  *
@@ -21,10 +21,9 @@
 
 'use strict';
 
-const _ = require('lodash');
-
-const defaults = require('./default').default;
-const config = require('./' + (process.env.NODE_ENV || 'development'));
-
-// merge configuration file with defaults
-module.exports = _.merge({}, defaults, config, { environment: process.env.NODE_ENV || 'development' });
+module.exports = {
+    amqpUpdateRate: 5,
+    logLevel: 'verbose',
+    logFile: null,
+    defaultAdmin: true
+};
