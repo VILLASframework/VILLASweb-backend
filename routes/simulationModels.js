@@ -100,7 +100,7 @@ router.put('/models/:id', (req, res) => {
 });
 
 router.get('/models/:id', (req, res) => {
-    SimulationModel.findById(req.params.id, (req, model) => {
+    SimulationModel.findById(req.params.id, (err, model) => {
         if (err) {
             logger.log('verbose', 'GET Unknown simulation model for id ' + req.params.id);
             return res.status(400).send(err);
