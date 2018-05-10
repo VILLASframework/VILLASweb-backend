@@ -200,9 +200,9 @@ router.route('/authenticate').post(function(req, res) {
       }
 
       // create authentication token
-      const token = jwt.sign(user, config.secret, {});
+      const token = jwt.sign(user.toObject(), config.secret, {});
 
-      return res.send({ success: true, message: 'Authenticated', token: token});
+      return res.send({ success: true, message: 'Authenticated', token });
     });
   });
 });
