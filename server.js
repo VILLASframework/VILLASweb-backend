@@ -67,7 +67,8 @@ if (config.logFile) {
 }
 
 logger.info('--- Started VILLASweb backend ---');
-//logger.info('Branch: ' + git.branch() + ', Commit: ' + git.short());
+logger.info('Environment: ' + config.environment);
+logger.info('Build: ' + git.branch() + ' ' + git.tag() + ' from ' + git.date());
 
 // configure app
 app.use(expressWinston.logger({ winstonInstance: logger, meta: false, colorize: true, msg: "HTTP {{req.method}} {{res.statusCode}} {{req.url}} {{res.responseTime}}ms" }));
@@ -123,8 +124,6 @@ app.use(function(req, res, next) {
 });
 
 // development error handler
-logger.info("Environment: " + app.get('env'));
-
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
