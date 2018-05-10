@@ -28,7 +28,9 @@ const simulationModelSchema = new mongoose.Schema({
     outputLength: { type: Number, default: 1 },
     inputLength: { type: Number, default: 1 },
     outputMapping: { type: mongoose.Schema.Types.Mixed, default: {} },
-    inputMapping: { type: mongoose.Schema.Types.Mixed, default: {} }
+    inputMapping: { type: mongoose.Schema.Types.Mixed, default: {} },
+    model: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
+    configuration: { type: mongoose.Schema.Types.ObjectId, ref: 'File' }
 }, { versionKey: false });
 
 module.exports = mongoose.model('SimulationModel', simulationModelSchema);
