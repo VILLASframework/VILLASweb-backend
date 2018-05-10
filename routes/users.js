@@ -24,7 +24,7 @@ var express = require('express');
 var jwt = require('jsonwebtoken');
 
 var auth = require('../auth');
-var config = require('../config')[process.env.NODE_ENV || 'development'];
+const config = require('../config/index');
 var logger = require('../utils/logger');
 
 // models

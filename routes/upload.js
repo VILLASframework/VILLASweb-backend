@@ -27,7 +27,7 @@ var fs = require('fs');
 var sizeOf = require('image-size');
 
 // load configuration
-var config = require('../config');
+const config = require('../config/index');
 var auth = require('../auth');
 var logger = require('../utils/logger');
 
