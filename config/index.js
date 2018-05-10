@@ -23,7 +23,7 @@
 
 const _ = require('lodash');
 
-const defaults = require('./default').default;
+const defaults = require('./default');
 const config = require('./' + (process.env.NODE_ENV || 'development'));
 
 // merge configuration file with defaults
