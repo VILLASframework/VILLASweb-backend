@@ -107,7 +107,7 @@ class AMQPClient {
 
   resetSimulator(uuid, when) {
     const data = { 
-      action: 'simulator.reset', 
+      action: 'reset', 
       when
     };
 
@@ -116,7 +116,7 @@ class AMQPClient {
 
   shutdownSimulator(uuid, when) {
     const data = { 
-      action: 'simulator.shutdown', 
+      action: 'shutdown', 
       when
     };
 
@@ -125,7 +125,7 @@ class AMQPClient {
 
   startSimulator(uuid, when) {
     const data = { 
-      action: 'simulator.start', 
+      action: 'start', 
       when
     };
 
@@ -134,7 +134,7 @@ class AMQPClient {
 
   stopSimulator(uuid, when) {
     const data = { 
-      action: 'simulator.stop', 
+      action: 'stop', 
       when
     };
 
@@ -143,7 +143,7 @@ class AMQPClient {
 
   pauseSimulator(uuid, when) {
     const data = { 
-      action: 'simulator.pause', 
+      action: 'pause', 
       when
     };
 
@@ -152,7 +152,7 @@ class AMQPClient {
 
   resumeSimulator(uuid, when) {
     const data = { 
-      action: 'simulator.resume', 
+      action: 'resume', 
       when
     };
 
