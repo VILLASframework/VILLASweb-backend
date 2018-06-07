@@ -130,8 +130,6 @@ class AMQPClient {
       parameters
     };
 
-    console.log(data);
-
     this._sendAction(data, uuid);
   }
 
