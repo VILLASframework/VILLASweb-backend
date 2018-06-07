@@ -123,11 +123,14 @@ class AMQPClient {
     this._sendAction(data, uuid);
   }
 
-  startSimulator(uuid, when) {
+  startSimulator(uuid, when, parameters = {}) {
     const data = { 
       action: 'start', 
-      when
+      when,
+      parameters
     };
+
+    console.log(data);
 
     this._sendAction(data, uuid);
   }
@@ -160,7 +163,7 @@ class AMQPClient {
   }
 
   _sendAction(data, uuid = null) {
-    const opts = { headers: { category: 'simulator' }, priority: 0, deliveryMode: 2, contentType: 'application/json', contentEncoding: 'utf-8' }; 
+    const opts = { headers: { }, priority: 0, deliveryMode: 2, contentType: 'application/json', contentEncoding: 'utf-8' }; 
 
     if (uuid != null) {
       opts.headers.uuid = uuid;
