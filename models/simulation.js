@@ -31,6 +31,7 @@ const simulationSchema = new mongoose.Schema({
   models: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SimulationModel', default: [] }],
   projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project', default: [] }],
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  startParameters: { type: mongoose.Schema.Types.Mixed, default: {} }
 }, { versionKey: false });
 
 module.exports = mongoose.model('Simulation', simulationSchema);

@@ -140,7 +140,7 @@ router.post('/simulators/:id', (req, res) => {
         break;
 
       case 'start':
-        amqpClient.startSimulator(simulator.uuid, when);
+        amqpClient.startSimulator(simulator.uuid, when, req.body.parameters);
         break;
 
       case 'stop':
