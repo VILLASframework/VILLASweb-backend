@@ -31,6 +31,6 @@ const simulatorSchema = new mongoose.Schema({
   state: { type: String, default: "" },
   properties: { type: mongoose.Schema.Types.Mixed, default: {} },
   rawProperties: { type: mongoose.Schema.Types.Mixed, default: {} },
-}, { versionKey: false });
+}, { versionKey: false, timestamps: true });
 
 module.exports = mongoose.model('Simulator', simulatorSchema);
