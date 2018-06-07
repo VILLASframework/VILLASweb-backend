@@ -38,7 +38,7 @@ var userSchema = new Schema({
   mail: { type: String, default: "" },
   simulations: [{ type: Schema.Types.ObjectId, ref: 'Simulation', default: [] }],
   files: [{type: Schema.Types.ObjectId, ref: 'File', default: [] }]
-}, { versionKey: false });
+}, { versionKey: false, timestamps: true });
 
 userSchema.methods.verifyPassword = function(password, callback) {
   bcrypt.compare(password, this.password, function(err, isMatch) {

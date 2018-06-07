@@ -31,6 +31,6 @@ var visualizationSchema = new Schema({
   widgets: { type: Array, default: [] },
   grid: { type: Number, default: 1 },
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true }
-}, { versionKey: false });
+}, { versionKey: false, timestamps: true });
 
 module.exports = mongoose.model('Visualization', visualizationSchema);

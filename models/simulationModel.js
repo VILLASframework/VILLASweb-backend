@@ -30,6 +30,6 @@ const simulationModelSchema = new mongoose.Schema({
     outputMapping: { type: mongoose.Schema.Types.Mixed, default: {} },
     inputMapping: { type: mongoose.Schema.Types.Mixed, default: {} },
     startParameters: { type: mongoose.Schema.Types.Mixed, default: {} }
-}, { versionKey: false });
+}, { versionKey: false, timestamps: true });
 
 module.exports = mongoose.model('SimulationModel', simulationModelSchema);
