@@ -165,6 +165,8 @@ class AMQPClient {
 
     if (uuid != null) {
       opts.headers.uuid = uuid;
+    } else {
+      opts.headers.category = 'simulator';
     }
 
     this._channel.publish(VILLAS_EXCHANGE, '', new Buffer(JSON.stringify(data)), opts);
