@@ -78,6 +78,10 @@ class AMQPClient {
           }
 
           // update existing model
+          if (simulator.state !== content.state) {
+            simulator.stateUpdatedAt = Date.now();
+          }
+
           simulator.host = content.host;
           simulator.model = content.model;
           simulator.uptime = content.uptime;
