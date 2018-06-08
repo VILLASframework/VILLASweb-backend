@@ -27,7 +27,7 @@ module.exports = {
     databaseURL: 'mongodb://localhost:27017/',
     secret: 'longsecretislong',
     amqpEndpoint: 'amqp://localhost',
-    amqpUpdateRate: 60,
+    amqpUpdateRate: 10,
     logLevel: 'error',
     logFile: './log.txt',
     publicDir: '../public',
