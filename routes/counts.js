@@ -23,7 +23,7 @@
 var express = require('express');
 
 // models
-var Node = require('../models/node');
+var Simulator = require('../models/simulator');
 var Simulation = require('../models/simulation');
 var Project = require('../models/project');
 var Visualization = require('../models/visualization');
@@ -38,16 +38,16 @@ router.get('/counts', function(req, res) {
   var queries = [
     Simulation.count().exec(),
     User.count().exec(),
-    Node.count().exec(),
+    Simulator.count().exec(),
     Project.count().exec(),
     Visualization.count().exec(),
   ]
 
   Promise.all(queries).then(function(counts) {
     res.send({
-      simulators: counts[0],
+      simulations: counts[0],
       users: counts[1],
-      nodes: counts[2],
+      simulators: counts[2],
       projects: counts[3],
       visualizations: counts[4],
     });
