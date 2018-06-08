@@ -62,7 +62,7 @@ class AMQPClient {
         if ('action' in content) {
           return;
         }
-        
+
         // update model for this simulator
         Simulator.findOne({ uuid: content.properties.uuid }, (err, simulator) => {
           if (err) {
@@ -77,10 +77,8 @@ class AMQPClient {
             simulator = new Simulator({ uuid: content.properties.uuid });
           }
 
-          // update existing model
-          if (simulator.state !== content.state) {
-            simulator.stateUpdatedAt = Date.now();
-          }
+          // update the timestamp since we have fresh data
+          simulator.stateUpdatedAt = Date.now();
 
           simulator.host = content.host;
           simulator.model = content.model;
