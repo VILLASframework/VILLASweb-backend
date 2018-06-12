@@ -4,7 +4,7 @@
   "private": true,
   "main": "server.js",
   "scripts": {
-    "start": "if [ \"$NODE_ENV\" = \"production\" ]; then node server.js; else nodemon server.js; fi"
+    "start": "if [ \"$NODE_ENV\" = \"production\" ] || [ \"$NODE_ENV\" = \"dotenv\" ]; then node server.js; else nodemon server.js; fi"
   },
   "dependencies": {
     "amqplib": "^0.5.2",
