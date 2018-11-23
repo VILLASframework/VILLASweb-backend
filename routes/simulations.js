@@ -38,7 +38,7 @@ router.use('/simulations', auth.validateToken);
 
 // routes
 router.get('/simulations', /*auth.validateRole('simulation', 'read'),*/ function(req, res) {
-  Simulation.find({ user: req.decoded._id }, function(err, simulations) {
+  Simulation.find({ }, function(err, simulations) {
     if (err) {
       logger.error('Unable to receive simulations', err);
       return res.status(400).send(err);
@@ -87,7 +87,7 @@ router.post('/simulations', /*auth.validateRole('simulation', 'create'),*/ funct
 });
 
 router.put('/simulations/:id', /*auth.validateRole('simulation', 'update'),*/ function(req, res) {
-  Simulation.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, simulation) {
+  Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
       logger.log('verbose', 'PUT Unknown simulation for id: ' + req.params.id);
       return res.status(400).send(err);
@@ -151,7 +151,7 @@ router.put('/simulations/:id', /*auth.validateRole('simulation', 'update'),*/ fu
 });
 
 router.get('/simulations/:id', /*auth.validateRole('simulation', 'read'),*/ function(req, res) {
-  Simulation.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, simulation) {
+  Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
       logger.log('verbose', 'GET Unknown simulation for id: ' + req.params.id);
       return res.send(err);
@@ -162,7 +162,7 @@ router.get('/simulations/:id', /*auth.validateRole('simulation', 'read'),*/ func
 });
 
 router.delete('/simulations/:id', /*auth.validateRole('simulation', 'delete'),*/ function(req, res) {
-  Simulation.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, simulation) {
+  Simulation.findOne({ _id: req.params.id }, function(err, simulation) {
     if (err) {
       logger.log('verbose', 'DELETE Unknown simulation for id: ' + req.params.id);
       return res.status(400).send(err);

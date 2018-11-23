@@ -38,7 +38,7 @@ router.use('/visualizations', auth.validateToken);
 // routes
 router.get('/visualizations', /*auth.validateRole('visualization', 'read'),*/ function(req, res) {
   // get all visualizations
-  Visualization.find({ user: req.decoded._id }, function(err, visualizations) {
+  Visualization.find({ }, function(err, visualizations) {
     if (err) {
       logger.error('Unable to receive visualizations', err);
       return res.status(500).send(err);
@@ -50,7 +50,7 @@ router.get('/visualizations', /*auth.validateRole('visualization', 'read'),*/ fu
 
 router.post('/visualizations', /*auth.validateRole('visualization', 'create'),*/ function(req, res) {
   // get project for visualization
-  Project.findOne({ _id: req.body.visualization.project, user: req.decoded._id }, function(err, project) {
+  Project.findOne({ _id: req.body.visualization.project }, function(err, project) {
     if (err) {
       logger.log('verbose', 'Unable to find project ' + req.body.visualization.project, err);
       return res.status(400).send(err);
@@ -63,7 +63,7 @@ router.post('/visualizations', /*auth.validateRole('visualization', 'create'),*/
 
     req.body.visualization.user = req.decoded._id;
     const visualization = new Visualization(req.body.visualization);
-  
+
     visualization.save(function(err) {
       if (err) {
         logger.error('Unable to create visualization', err);
@@ -71,7 +71,7 @@ router.post('/visualizations', /*auth.validateRole('visualization', 'create'),*/
       }
 
       project.visualizations.push(visualization._id);
-      
+
       project.save(function(err) {
         if (err) {
           logger.error('Unable to save project ' + visualization.project, err);
@@ -86,7 +86,7 @@ router.post('/visualizations', /*auth.validateRole('visualization', 'create'),*/
 
 router.put('/visualizations/:id', /*auth.validateRole('visualization', 'update'),*/ function(req, res) {
   // get visualization
-  Visualization.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, visualization) {
+  Visualization.findOne({ _id: req.params.id }, function(err, visualization) {
     if (err) {
       logger.log('verbose', 'PUT Unknown visualization for id: ' + req.params.id);
       return res.status(400).send(err);
@@ -110,7 +110,7 @@ router.put('/visualizations/:id', /*auth.validateRole('visualization', 'update')
 });
 
 router.get('/visualizations/:id', /*auth.validateRole('visualization', 'read'),*/ function(req, res) {
-  Visualization.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, visualization) {
+  Visualization.findOne({ _id: req.params.id }, function(err, visualization) {
     if (err) {
       logger.log('verbose', 'GET Unknown visualization ' + req.params.id, err);
       return res.status(400).send(err);
@@ -121,14 +121,14 @@ router.get('/visualizations/:id', /*auth.validateRole('visualization', 'read'),*
 });
 
 router.delete('/visualizations/:id', /*auth.validateRole('visualization', 'delete'),*/ function(req, res) {
-  Visualization.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, visualization) {
+  Visualization.findOne({ _id: req.params.id }, function(err, visualization) {
     if (err) {
       logger.log('verbose', 'DELETE Unknown visualization ' + req.params.id, err);
       return res.status(400).send(err);
     }
 
     // remove from project's list
-    Project.findOne({ _id: visualization.project, user: req.decoded._id }, function(err, project) {
+    Project.findOne({ _id: visualization.project }, function(err, project) {
       if (err) {
         logger.log('verbose', 'Unable to find project ' + visualization.project, err);
         return res.status(400).send(err);

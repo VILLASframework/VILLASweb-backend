@@ -38,7 +38,7 @@ router.use('/files', auth.validateToken);
 // routes
 router.get('/files', auth.validateToken, function(req, res) {
   // find files with user
-  File.find({ user: req.decoded._id }, function(err, files) {
+  File.find({ }, function(err, files) {
     if (err) {
       logger.error('Error while finding files from user', err);
       return res.status(500).send({ success: false, message: 'Could not retrieve user\'s files.' });
@@ -49,7 +49,7 @@ router.get('/files', auth.validateToken, function(req, res) {
 });
 
 router.get('/files/:id', function(req, res) {
-  File.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, file) {
+  File.findOne({ _id: req.params.id }, function(err, file) {
     if (err) {
       logger.log('verbose', 'GET Unknown file for id: ' + req.params.id);
       return res.status(400).send(err);
@@ -60,7 +60,7 @@ router.get('/files/:id', function(req, res) {
 });
 
 router.delete('/files/:id', function(req, res) {
-  File.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, file) {
+  File.findOne({ _id: req.params.id }, function(err, file) {
     if (err) {
       logger.log('verbose', 'DELETE Unknown file for id: ' + req.params.id);
       return res.status(400).send(err);

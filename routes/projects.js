@@ -39,7 +39,7 @@ router.use('/projects', auth.validateToken);
 // routes
 router.get('/projects', /*auth.validateRole('project', 'read'),*/ function(req, res) {
   // get all projects
-  Project.find({ user: req.decoded._id }, function(err, projects) {
+  Project.find({ }, function(err, projects) {
     if (err) {
       logger.error('Unable to receive projects', err);
       return res.status(400).send(err);
@@ -82,7 +82,7 @@ router.post('/projects', /*auth.validateRole('project', 'create'),*/ function(re
         }
 
         // add project to simulation
-        Simulation.findOne({ _id: project.simulation, user: project.user }, function(err, simulation) {
+        Simulation.findOne({ _id: project.simulation }, function(err, simulation) {
           if (err) {
             logger.log('verbose', 'Unknown simulation for id: ' + project.simulation, { err, project });
             return res.status(400).send(err);
@@ -106,7 +106,7 @@ router.post('/projects', /*auth.validateRole('project', 'create'),*/ function(re
 
 router.put('/projects/:id', /*auth.validateRole('project', 'update'),*/ function(req, res) {
   // get project
-  Project.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, project) {
+  Project.findOne({ _id: req.params.id }, function(err, project) {
     if (err) {
       logger.log('verbose', 'PUT Unknown project for id: ' + req.params.id);
       return res.status(400).send(err);
@@ -153,7 +153,7 @@ router.put('/projects/:id', /*auth.validateRole('project', 'update'),*/ function
 
     if (req.body.project.simulation && req.body.project.simulation !== project.simulation) {
       // remove from old simulation
-      Simulation.findOne({ _id: project.simulation, user: project.user }, function(err, simulation) {
+      Simulation.findOne({ _id: project.simulation }, function(err, simulation) {
         if (err) {
           logger.error('Unable to find simulation ' + project.simulation);
           return res.status(500).send(err);
@@ -172,7 +172,7 @@ router.put('/projects/:id', /*auth.validateRole('project', 'update'),*/ function
       });
 
       // add to new simulation
-      Simulation.findOne({ _id: req.body.project.simulation, user: req.decoded._id }, function(err, simulation) {
+      Simulation.findOne({ _id: req.body.project.simulation }, function(err, simulation) {
         if (err) {
           logger.error('Unable to find simulation ' + req.body.project.simulation, err);
           return res.status(500).send(err);
@@ -207,7 +207,7 @@ router.put('/projects/:id', /*auth.validateRole('project', 'update'),*/ function
 });
 
 router.get('/projects/:id', /*auth.validateRole('project', 'read'),*/ function(req, res) {
-  Project.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, project) {
+  Project.findOne({ _id: req.params.id }, function(err, project) {
     if (err) {
       logger.log('verbose', 'GET Unknown project for id: ' + req.params.id);
       return res.status(400).send(err);
@@ -218,7 +218,7 @@ router.get('/projects/:id', /*auth.validateRole('project', 'read'),*/ function(r
 });
 
 router.delete('/projects/:id', /*auth.validateRole('project', 'delete'),*/ function(req, res) {
-  Project.findOne({ _id: req.params.id, user: req.decoded._id }, function(err, project) {
+  Project.findOne({ _id: req.params.id }, function(err, project) {
     if (err) {
       logger.log('verbose', 'DELETE Unknown project for id: ' + req.params.id);
       return res.status(400).send(err);
