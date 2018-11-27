@@ -29,7 +29,7 @@ const simulatorSchema = new mongoose.Schema({
   model: { type: String, default: "" },
   uptime: { type: Number, default: 0 },
   state: { type: String, default: "" },
-  stateUpdatedAt: { type: Date, default: Date.now() },
+  stateUpdatedAt: { type: Number, default: Date.now },
   properties: { type: mongoose.Schema.Types.Mixed, default: {} },
   rawProperties: { type: mongoose.Schema.Types.Mixed, default: {} },
 }, { versionKey: false, timestamps: true });
