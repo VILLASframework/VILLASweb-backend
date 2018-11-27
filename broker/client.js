@@ -104,71 +104,17 @@ class AMQPClient {
   }
 
   ping() {
-    this._sendAction({ action: 'ping' });
+    logger.info('Sending ping command to all simulators');
+    this.sendAction({ action: 'ping' });
   }
 
-  resetSimulator(uuid, when) {
-    const data = { 
-      action: 'reset', 
-      when
-    };
-
-    this._sendAction(data, uuid);
-  }
-
-  shutdownSimulator(uuid, when) {
-    const data = { 
-      action: 'shutdown', 
-      when
-    };
-
-    this._sendAction(data, uuid);
-  }
-
-  startSimulator(uuid, when, parameters = {}) {
-    const data = { 
-      action: 'start', 
-      when,
-      parameters
-    };
-
-    this._sendAction(data, uuid);
-  }
-
-  stopSimulator(uuid, when) {
-    const data = { 
-      action: 'stop', 
-      when
-    };
-
-    this._sendAction(data, uuid);
-  }
-
-  pauseSimulator(uuid, when) {
-    const data = { 
-      action: 'pause', 
-      when
-    };
-
-    this._sendAction(data, uuid);
-  }
-
-  resumeSimulator(uuid, when) {
-    const data = { 
-      action: 'resume', 
-      when
-    };
-
-    this._sendAction(data, uuid);
-  }
-
-  _sendAction(data, uuid = null) {
-    const opts = { headers: { }, priority: 0, deliveryMode: 2, contentType: 'application/json', contentEncoding: 'utf-8' }; 
+  sendAction(data, uuid = null) {
+    const opts = { headers: { }, priority: 0, deliveryMode: 2, contentType: 'application/json', contentEncoding: 'utf-8' };
 
     if (uuid != null) {
       opts.headers.uuid = uuid;
     } else {
-      opts.headers.category = 'simulator';
+      opts.headers.action = 'ping';
     }
 
     this._channel.publish(VILLAS_EXCHANGE, '', new Buffer(JSON.stringify(data)), opts);

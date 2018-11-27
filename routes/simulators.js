@@ -128,36 +128,20 @@ router.post('/simulators/:id', (req, res) => {
       return res.status(400).send(err);
     }
 
-    const when = req.body.when || Date.now() / 1000.0;
+    var actions = req.body;
+    var now = Date.now();
 
-    switch (req.body.action) {
-      case 'reset':
-        amqpClient.resetSimulator(simulator.uuid, when);
-        break;
-
-      case 'shutdown':
-        amqpClient.shutdownSimulator(simulator.uuid, when);
-        break;
-
-      case 'start':
-        amqpClient.startSimulator(simulator.uuid, when, req.body.parameters);
-        break;
-
-      case 'stop':
-        amqpClient.stopSimulator(simulator.uuid, when);
-        break;
-
-      case 'pause':
-        amqpClient.pauseSimulator(simulator.uuid, when);
-        break;
-
-      case 'resume':
-        amqpClient.resumeSimulator(simulator.uuid, when);
-        break;
-
-      default:
-        logger.log('verbose', 'POST Unknown action ' + req.body.action);
+    if (!Array.isArray(actions)) {
+      logger.error('Unable to send actions to simulator', project);
+      return res.status(500).send("error");
     }
+
+    actions.forEach((action) => {
+      if (!action.when)
+        action.when = now / 1000.0;
+
+        amqpClient.sendAction(action, simulator.uuid);
+    });
 
     res.send({});
   });
