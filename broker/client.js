@@ -54,7 +54,7 @@ class AMQPClient {
 
       // add message queue
       const simulatorQueue = this._channel.assertQueue();
-      this._channel.bindQueue(simulatorQueue.queue, VILLAS_EXCHANGE, '', { category: 'simulator' });
+      this._channel.bindQueue(simulatorQueue.queue, VILLAS_EXCHANGE, '', { });
       this._channel.consume(simulatorQueue.queue, msg => {
         // only handle status responses
         // TODO: Check if content is in wrong format, docu says "status" wrapped content
