@@ -1,5 +1,11 @@
 # <img src="doc/pictures/villas_web.png" width=40 /> VILLASweb-backend
 
+## Important notice: This repository is DEPRECATED
+This javascript implementation of the VILLASweb backend is no longer maintained by the Institute for Automation of Complex Power Systems, RWTH Aachen University.
+The repository is archived.
+
+We stongly recommend to use the [Go backend implementation for the VILLASweb API](https://git.rwth-aachen.de/acs/public/villas/web-backend-go).
+
 ## Description
 This is the server for the VILLASweb website. The term __frontend__ refers to this project, the server the website (frontend) is talking to.
 The backend serves the database content to the website, handles authentication and persistent storage of content. It does __not__ handle simulation data. For this have a look at VILLASnode.
